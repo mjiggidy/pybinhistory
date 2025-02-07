@@ -1,5 +1,5 @@
 # pybinblog
 
-Represent a  access log file which accompanies a .
+Represent a `.log` access log file which accompanies a `.avb`.
 
 Under development.
