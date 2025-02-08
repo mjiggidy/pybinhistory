@@ -24,6 +24,9 @@ class BinLogEntry:
 	user:str
 	"""Username which accessed the bin"""
 
+	# TODO: Add validation
+	# (Need to figure out field length limits or any invalid characters)
+
 	def to_string(self) -> str:
 		"""Format the bin log entry as a string"""
 
@@ -90,7 +93,7 @@ class BinLog:
 	"""An .avb access log"""
 
 	def __init__(self, entries:list[BinLogEntry]|None=None):
-		self._entries:list[BinLogEntry] = entries or []
+		self._entries:list[BinLogEntry] = [e for e in entries] if entries else []
 	
 	@property
 	def entries(self) -> list[BinLogEntry]:
@@ -123,5 +126,22 @@ class BinLog:
 				entries.append(BinLogEntry.from_string(entry, max_year=file_mtime.year))
 		
 		return cls(entries)
+	
+	# Convenience methods
+	@classmethod
+	def touch(cls, log_path:str, computer:str, user:str, timestamp:datetime.datetime|None=None):
+		"""Add an entry to a log file"""
 
+		import pathlib
+
+		entries = [BinLogEntry(
+			timestamp = timestamp or datetime.datetime.now(),
+			computer  = computer,
+			user      = user
+		)]
+
+		# Read in any existing entries
+		if pathlib.Path(log_path).exists():
+			entries.extend(cls.from_filepath(log_path).entries)
 		
+		BinLog(entries).to_filepath(log_path)
