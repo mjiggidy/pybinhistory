@@ -1,2 +1,2 @@
 from .exceptions import BinLogParseError
-from .binlog import BinLog
+from .binlog import BinLog, BinLogEntry
