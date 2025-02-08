@@ -37,7 +37,7 @@ class BinLogEntry:
 		return f"{format_datetime.ljust(21)}{format_entry_computer.ljust(26)}{format_entry_user.ljust(21)}"
 	
 	@classmethod
-	def from_string(cls, log_entry:str, max_year=datetime.datetime.now().year):
+	def from_string(cls, log_entry:str, max_year=datetime.datetime.now().year) -> "BinLogEntry":
 		"""Return the log entry from a given log entry string"""
 
 		try:
@@ -68,20 +68,19 @@ class BinLogEntry:
 		"""Form a datetime from a given timestamp string"""
 		
 		# NOTE: This is because timestamps in the .log file don't indicate the year, but they DO
-		# indicate the day of the week.  So, to get a useful `datetime` object out of this, we 
+		# indicate the day of the week.  So, to get a useful `datetime` object out of this, "we"
 		# need to determine which year the month/day occurs on the particular day of the week
 		# using `max_year` as a starting point (likely a file modified date, or current year)
 
 		# Make the initial datetime from known info
 		initial_date = datetime.datetime.strptime(timestamp, DATETIME_STRING_FORMAT)
 
-		# Also split the elements
+		# Also get the weekday from the timestamp string for comparison
 		wkday = timestamp[:3]
 
 		# Search backwards up to 11 years
 		for year in range(max_year, max_year - 11, -1):
 			test_date = initial_date.replace(year=year)
-		
 			if test_date.strftime("%a") == wkday:
 				return test_date
 
@@ -98,7 +97,7 @@ class BinLog:
 	@property
 	def entries(self) -> list[BinLogEntry]:
 		"""Iterate over the log entries"""
-		return sorted(self._entries, key=lambda e: e.timestamp)[-10:]
+		return sorted(self._entries, key=lambda e: e.timestamp)[-MAX_ENTRIES:]
 	
 	def to_string(self) -> str:
 		"""Format as string"""
@@ -112,7 +111,7 @@ class BinLog:
 			output_handle.write(self.to_string())
 
 	@classmethod
-	def from_filepath(cls, log_path:str):
+	def from_filepath(cls, log_path:str) -> "BinLog":
 		"""Load from an existing .log file"""
 		import os
 
@@ -145,3 +144,9 @@ class BinLog:
 			entries.extend(cls.from_filepath(log_path).entries)
 		
 		BinLog(entries).to_filepath(log_path)
+	
+	@classmethod
+	def last_entry(cls, log_path) -> BinLogEntry|None:
+		"""Get the last/latest entry from a bin log"""
+		entries = BinLog.from_filepath(log_path).entries
+		return entries[1] if entries else  None
