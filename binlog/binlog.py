@@ -46,7 +46,7 @@ class BinLogEntry:
 		except ValueError as e:
 			raise BinLogParseError(f"Unexpected value encountered while parsing access time \"{entry_datetime}\": {e}") from e
 		
-		# Computer name: 
+		# Computer name: Observed to be AT LEAST 15 characters.  Likely the max but need to check.
 		entry_computer = log_entry[21:47]
 		if not entry_computer.startswith(FIELD_START_COMPUTER):
 			raise BinLogParseError(f"Unexpected value encountered while parsing computer namme: \"{entry_computer}\"")
