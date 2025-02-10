@@ -3,10 +3,24 @@ from binlog import BinLog
 
 good = 0
 bad = 0
+skip = 0
 
-for path_log in sys.argv[1:]:
+if "-l" in sys.argv:
+	with open(sys.argv[sys.argv.index("-l") + 1]) as handle:
+		log_list = [l.rstrip() for l in handle.readlines()]
+else:
+	log_list = sys.argv[1:]
+
+
+for path_log in log_list:
 	
-	log = BinLog.from_filepath(path_log)
+	try:
+		log = BinLog.from_filepath(path_log)
+	except Exception as e:
+		print(f"[Skipping {path_log}]: {e}")
+		skip += 1
+		continue
+
 
 	with open(path_log) as handle:
 		orig = handle.read()
@@ -15,7 +29,9 @@ for path_log in sys.argv[1:]:
 		
 		print(path_log)
 
-		print(log.to_string())
+		for entry in log.entries:
+			print(entry.to_string() + "   " + str(entry.timestamp.year))
+		
 		print()
 		print(orig)
 		print()
@@ -26,5 +42,5 @@ for path_log in sys.argv[1:]:
 	else:
 		good += 1
 
-print(f"Good: {good},   Bad: {bad}")
+print(f"Good: {good},   Bad: {bad}   Skip: {skip}")
 	
