@@ -46,13 +46,14 @@ class BinLogEntry:
 		except ValueError as e:
 			raise BinLogParseError(f"Unexpected value encountered while parsing access time \"{entry_datetime}\": {e}") from e
 		
-		
+		# Computer name: 
 		entry_computer = log_entry[21:47]
 		if not entry_computer.startswith(FIELD_START_COMPUTER):
 			raise BinLogParseError(f"Unexpected value encountered while parsing computer namme: \"{entry_computer}\"")
 		parsed_computer = entry_computer[10:].rstrip()
 
-		entry_user = log_entry[47:67]
+		# User name: Observed to be max 15 characters (to end of line)
+		entry_user = log_entry[47:68]
 		if not entry_user.startswith(FIELD_START_USER):
 			raise BinLogParseError(f"Unexpected value encountered while parsing user namme: \"{entry_user}\"")
 		parsed_user = entry_user[6:].rstrip()
@@ -97,7 +98,8 @@ class BinLog:
 	@property
 	def entries(self) -> list[BinLogEntry]:
 		"""Iterate over the log entries"""
-		return sorted(self._entries, key=lambda e: e.timestamp)[-MAX_ENTRIES:]
+		return self._entries
+		#return sorted(self._entries, key=lambda e: e.timestamp)[-MAX_ENTRIES:]
 	
 	def to_string(self) -> str:
 		"""Format as string"""
@@ -118,6 +120,7 @@ class BinLog:
 		# Get file modified date to get a max_year for datetime parsing
 		file_mtime = datetime.datetime.fromtimestamp(os.stat(log_path).st_mtime)
 		
+		# NOTE: Encountered mac_roman, need to deal with older encodings sometimes
 		with open (log_path, "r") as log_handle:
 			entries = []
 
