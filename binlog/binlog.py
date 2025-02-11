@@ -112,6 +112,9 @@ class BinLog:
 		with open(file_path, "w", encoding="utf-8") as output_handle:
 			output_handle.write(self.to_string())
 
+	def __iter__(self):
+		yield from self.entries
+
 	@classmethod
 	def from_filepath(cls, log_path:str) -> "BinLog":
 		"""Load from an existing .log file"""

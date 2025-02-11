@@ -5,6 +5,9 @@ good = 0
 bad = 0
 skip = 0
 
+# Use `-l examples.txt` to feed a text (`examples.txt`) file full of paths to .log files
+# Or just give 'er a list of .logs directly as arguments
+# Quick n dirty, I know
 if "-l" in sys.argv:
 	with open(sys.argv[sys.argv.index("-l") + 1]) as handle:
 		log_list = [l.rstrip() for l in handle.readlines()]
