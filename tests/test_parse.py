@@ -25,7 +25,7 @@ for path_log in log_list:
 		continue
 
 
-	with open(path_log) as handle:
+	with open(path_log, errors="replace") as handle:
 		orig = handle.read()
 
 	if log.to_string() != orig:

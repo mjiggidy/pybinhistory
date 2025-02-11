@@ -1,4 +1,4 @@
-import dataclasses, datetime
+import dataclasses, datetime, typing
 from . import BinLogParseError
 
 MAX_ENTRIES:int = 10
@@ -37,14 +37,14 @@ class BinLogEntry:
 		return f"{format_datetime.ljust(21)}{format_entry_computer.ljust(26)}{format_entry_user.ljust(21)}"
 	
 	@classmethod
-	def from_string(cls, log_entry:str, max_year=datetime.datetime.now().year) -> "BinLogEntry":
+	def from_string(cls, log_entry:str, max_year:int=datetime.datetime.now().year) -> "BinLogEntry":
 		"""Return the log entry from a given log entry string"""
 
 		try:
 			entry_datetime   = log_entry[0:19]
 			parsed_timestamp = cls.datetime_from_log_timestamp(entry_datetime, max_year)
 		except ValueError as e:
-			raise BinLogParseError(f"Unexpected value encountered while parsing access time \"{entry_datetime}\": {e}") from e
+			raise BinLogParseError(f"Unexpected value encountered while parsing access time \"{entry_datetime}\" (Assuming a max year of {max_year}): {e}") from e
 		
 		# Computer name: Observed to be AT LEAST 15 characters.  Likely the max but need to check.
 		entry_computer = log_entry[21:47]
@@ -116,21 +116,27 @@ class BinLog:
 		yield from self.entries
 
 	@classmethod
-	def from_filepath(cls, log_path:str) -> "BinLog":
+	def from_filepath(cls, log_path:str, max_year:int|None=None) -> "BinLog":
 		"""Load from an existing .log file"""
-		import os
-
-		# Get file modified date to get a max_year for datetime parsing
-		file_mtime = datetime.datetime.fromtimestamp(os.stat(log_path).st_mtime)
 		
 		# NOTE: Encountered mac_roman, need to deal with older encodings sometimes
 		with open (log_path, "r") as log_handle:
-			entries = []
+			return cls.from_stream(log_handle, max_year=max_year)
+	
+	@classmethod
+	def from_stream(cls, file_handle:typing.TextIO, max_year:int|None) -> "BinLog":
+		"""Parse a log from an open file handle"""
+		import os
+		
+		stat_info = os.fstat(file_handle.fileno())
+		max_year = max_year or datetime.datetime.fromtimestamp(stat_info.st_mtime).year
 
-			for entry in log_handle:
-				entries.append(BinLogEntry.from_string(entry, max_year=file_mtime.year))
+		entries = []
+		for entry in file_handle:
+			entries.append(BinLogEntry.from_string(entry, max_year=max_year))
 		
 		return cls(entries)
+
 	
 	# Convenience methods
 	@classmethod
