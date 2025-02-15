@@ -29,7 +29,6 @@ class BinLogEntry:
 
 	def to_string(self) -> str:
 		"""Format the bin log entry as a string"""
-
 		format_datetime = self.timestamp.strftime(DATETIME_STRING_FORMAT)
 		format_entry_computer = FIELD_START_COMPUTER + self.computer
 		format_entry_user = FIELD_START_USER + self.user
@@ -39,7 +38,6 @@ class BinLogEntry:
 	@classmethod
 	def from_string(cls, log_entry:str, max_year:int=datetime.datetime.now().year) -> "BinLogEntry":
 		"""Return the log entry from a given log entry string"""
-
 		try:
 			entry_datetime   = log_entry[0:19]
 			parsed_timestamp = cls.datetime_from_log_timestamp(entry_datetime, max_year)
@@ -67,7 +65,6 @@ class BinLogEntry:
 	@staticmethod
 	def datetime_from_log_timestamp(timestamp:str, max_year:int) -> datetime.datetime:
 		"""Form a datetime from a given timestamp string"""
-		
 		# NOTE: This is because timestamps in the .log file don't indicate the year, but they DO
 		# indicate the day of the week.  So, to get a useful `datetime` object out of this, "we"
 		# need to determine which year the month/day occurs on the particular day of the week
@@ -103,14 +100,16 @@ class BinLog:
 	
 	def to_string(self) -> str:
 		"""Format as string"""
-
 		return str().join(e.to_string() + "\n" for e in self.entries)
 	
 	def to_filepath(self, file_path:str):
 		"""Write log to filepath"""
-
 		with open(file_path, "w", encoding="utf-8") as output_handle:
-			output_handle.write(self.to_string())
+			self.to_stream(output_handle)
+	
+	def to_stream(self, file_handle:typing.TextIO):
+		"""Write log to given stream"""
+		file_handle.write(self.to_string())
 
 	def __iter__(self):
 		yield from self.entries
@@ -118,7 +117,6 @@ class BinLog:
 	@classmethod
 	def from_path(cls, log_path:str, max_year:int|None=None) -> "BinLog":
 		"""Load from an existing .log file"""
-		
 		# NOTE: Encountered mac_roman, need to deal with older encodings sometimes
 		with open (log_path, "r") as log_handle:
 			return cls.from_stream(log_handle, max_year=max_year)
@@ -142,7 +140,6 @@ class BinLog:
 	@classmethod
 	def touch(cls, log_path:str, computer:str, user:str, timestamp:datetime.datetime|None=None):
 		"""Add an entry to a log file"""
-
 		import pathlib
 
 		entries = [BinLogEntry(
