@@ -18,7 +18,7 @@ else:
 for path_log in log_list:
 	
 	try:
-		log = BinLog.from_filepath(path_log)
+		log = BinLog.from_path(path_log)
 	except Exception as e:
 		print(f"[Skipping {path_log}]: {e}")
 		skip += 1

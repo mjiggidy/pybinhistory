@@ -116,7 +116,7 @@ class BinLog:
 		yield from self.entries
 
 	@classmethod
-	def from_filepath(cls, log_path:str, max_year:int|None=None) -> "BinLog":
+	def from_path(cls, log_path:str, max_year:int|None=None) -> "BinLog":
 		"""Load from an existing .log file"""
 		
 		# NOTE: Encountered mac_roman, need to deal with older encodings sometimes
@@ -153,12 +153,12 @@ class BinLog:
 
 		# Read in any existing entries
 		if pathlib.Path(log_path).exists():
-			entries.extend(cls.from_filepath(log_path).entries)
+			entries.extend(cls.from_path(log_path).entries)
 		
 		BinLog(entries).to_filepath(log_path)
 	
 	@classmethod
 	def last_entry(cls, log_path) -> BinLogEntry|None:
 		"""Get the last/latest entry from a bin log"""
-		entries = BinLog.from_filepath(log_path).entries
+		entries = BinLog.from_path(log_path).entries
 		return entries[1] if entries else  None
