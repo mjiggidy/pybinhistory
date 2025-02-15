@@ -22,7 +22,7 @@ from binlog import BinLog
 print(BinLog.last_entry("/path/to/bin.log"))
 ```
 
-This returns the most recent `BinLogEntry` item in the log:
+This returns the most recent [`BinLogEntry`](#binlogentry) item in the log:
 
 `BinLogEntry(timestamp=datetime.datetime(2023, 9, 22, 14, 8, 4), computer='zMichael', user='mj4u')`
 
@@ -42,3 +42,19 @@ from binlog import BinLog
 with open("/path/to/bin.log", encoding="mac_roman", errors="replace") as log_handle:
   log = BinLog.from_stream(log_handle)
 ```
+
+## Writing Bin Logs
+
+Similar to [reading](#reading-bin-logs), `BinLog` can be written to a bin log with `BinLog.to_path("/path/to/bin.log")` or `BinLog.to_stream(textio_stream)`.
+
+## `BinLogEntry`
+
+A `BinLog` contains a list of `BinLogEntry` objects.  `BinLogEntry` is really just a python [`dataclass`](https://docs.python.org/3/library/dataclasses.html) with the following fields:
+
+* `timestamp` [[`datetime`](https://docs.python.org/3/library/datetime.html#datetime-objects)]: Timestamp of access
+* `computer` [[str](https://docs.python.org/3/library/string.html)]: Typically the hostname of the Avid that accessed the bin
+* `user` [[str](https://docs.python.org/3/library/string.html)]: The Avid user who accessed the bin
+
+### Formatting
+
+Although `BinLog` typically handles reading and writing `BinLogEntry`s internally, `BinLogEntry` can be formatted as a typical log entry string with `.to_string()`, or read in from a log entry string with `.from_string(str)`.
