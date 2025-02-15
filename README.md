@@ -26,7 +26,11 @@ This returns the most recent [`BinLogEntry`](#binlogentry) item in the log:
 
 `BinLogEntry(timestamp=datetime.datetime(2023, 9, 22, 14, 8, 4), computer='zMichael', user='mj4u')`
 
-## Reading Bin Logs
+## `BinLog`
+
+A `BinLog` represents a... uh... bin log.  It handles reading and writing to log files, and essentially encapsulates a list of [`BinLogEntry`](#binlogentry)s.
+
+### Reading Bin Logs
 
 A bin log can be read from a given file path with the class method `BinLog.from_path()`
 
@@ -43,9 +47,17 @@ with open("/path/to/bin.log", encoding="mac_roman", errors="replace") as log_han
   log = BinLog.from_stream(log_handle)
 ```
 
-## Writing Bin Logs
+### Writing Bin Logs
 
 Similar to [reading](#reading-bin-logs), `BinLog` can be written to a bin log with `BinLog.to_path("/path/to/bin.log")` or `BinLog.to_stream(textio_stream)`.
+
+### Creating Bin Logs
+
+Aside from [reading a bin log from a file](#reading-bin-logs), a new `BinLog` can be created directly with `BinLog()`, optionally passing it a list of [`BinLogEntry`](#binlogentry)s.
+
+### Accessing `BinLogEntry`s
+
+To access the [`BinLogEntry`](#binlogentry)s in a `BinLog`, the `BinLog` object can be directly iterated over; or a list of [`BinLogEntry`](#binlogentry)s can be retrieved via the `BinLog.entries` property.
 
 ## `BinLogEntry`
 
