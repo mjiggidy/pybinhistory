@@ -161,4 +161,4 @@ class BinLog:
 	def last_entry(cls, log_path) -> BinLogEntry|None:
 		"""Get the last/latest entry from a bin log"""
 		entries = BinLog.from_path(log_path).entries
-		return entries[1] if entries else  None
+		return entries[-1] if entries else  None
