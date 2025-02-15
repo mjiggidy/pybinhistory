@@ -95,8 +95,9 @@ class BinLog:
 	@property
 	def entries(self) -> list[BinLogEntry]:
 		"""Iterate over the log entries"""
-		return self._entries
-		#return sorted(self._entries, key=lambda e: e.timestamp)[-MAX_ENTRIES:]
+		# TODO: Triple check bin log entries usually are sorted by date...
+		#return self._entries
+		return sorted(self._entries, key=lambda e: e.timestamp)[-MAX_ENTRIES:]
 	
 	def to_string(self) -> str:
 		"""Format as string"""
