@@ -103,7 +103,7 @@ class BinLog:
 		"""Format as string"""
 		return str().join(e.to_string() + "\n" for e in self.entries)
 	
-	def to_filepath(self, file_path:str):
+	def to_path(self, file_path:str):
 		"""Write log to filepath"""
 		with open(file_path, "w", encoding="utf-8") as output_handle:
 			self.to_stream(output_handle)
