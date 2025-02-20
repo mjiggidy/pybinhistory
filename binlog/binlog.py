@@ -161,7 +161,7 @@ class BinLog:
 		if pathlib.Path(log_path).exists():
 			entries.extend(cls.from_path(log_path).entries)
 		
-		BinLog(entries).to_filepath(log_path)
+		BinLog(entries).to_path(log_path)
 	
 	@classmethod
 	def last_entry(cls, log_path) -> BinLogEntry|None:
