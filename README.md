@@ -74,3 +74,7 @@ A `BinLog` contains a list of `BinLogEntry` objects.  `BinLogEntry` is really ju
 ### Formatting
 
 Although `BinLog` typically handles reading and writing `BinLogEntry`s internally, `BinLogEntry` can be formatted as a typical log entry string with `.to_string()`, or read in from a log entry string with `.from_string(str)`.
+
+
+# See Also
+- [`pybinlock`](https://github.com/mjiggidy/pybinlock)
