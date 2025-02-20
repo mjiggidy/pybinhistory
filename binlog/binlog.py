@@ -2,7 +2,7 @@ import dataclasses, datetime, typing
 from . import BinLogParseError, BinLogFieldLengthError
 from . import MAX_ENTRIES, DEFAULT_FILE_EXTENSION
 
-MAX_FIELD_LENGTH:int
+MAX_FIELD_LENGTH:int = 15
 """Max number of characters in User or Computer fields"""
 
 DATETIME_STRING_FORMAT:str = "%a %b %d %H:%M:%S"
