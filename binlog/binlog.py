@@ -1,15 +1,11 @@
 import dataclasses, datetime, typing
 from . import BinLogParseError
+from . import MAX_ENTRIES, DEFAULT_FILE_EXTENSION
 
-MAX_ENTRIES:int = 10
-"""Maximum log entries allowed in a file"""
-
+FIELD_START_USER:str       = "User: "
+FIELD_START_COMPUTER:str   = "Computer: "
 DATETIME_STRING_FORMAT:str = "%a %b %d %H:%M:%S"
 """Datetime string format for bin log entry (Example: Wed Dec 15 09:47:51)"""
-
-FIELD_START_USER:str      = "User: "
-FIELD_START_COMPUTER:str  = "Computer: "
-
 
 @dataclasses.dataclass
 class BinLogEntry:
@@ -160,3 +156,9 @@ class BinLog:
 		"""Get the last/latest entry from a bin log"""
 		entries = BinLog.from_path(log_path).entries
 		return entries[-1] if entries else  None
+	
+	@staticmethod
+	def log_path_from_bin_path(bin_path:str) -> str:
+		"""Determine the expected log path for a given bin path"""
+		import pathlib
+		return str(pathlib.Path(bin_path).with_suffix(DEFAULT_FILE_EXTENSION))
