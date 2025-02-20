@@ -1,13 +1,17 @@
 import dataclasses, datetime, typing
-from . import BinLogParseError
+from . import BinLogParseError, BinLogFieldLengthError
 from . import MAX_ENTRIES, DEFAULT_FILE_EXTENSION
 
-FIELD_START_USER:str       = "User: "
-FIELD_START_COMPUTER:str   = "Computer: "
+MAX_FIELD_LENGTH:int
+"""Max number of characters in User or Computer fields"""
+
 DATETIME_STRING_FORMAT:str = "%a %b %d %H:%M:%S"
 """Datetime string format for bin log entry (Example: Wed Dec 15 09:47:51)"""
 
-@dataclasses.dataclass
+FIELD_START_USER:str       = "User: "
+FIELD_START_COMPUTER:str   = "Computer: "
+
+@dataclasses.dataclass(frozen=True)
 class BinLogEntry:
 	"""An entry in a bin log"""
 
@@ -20,8 +24,16 @@ class BinLogEntry:
 	user:str
 	"""Username which accessed the bin"""
 
-	# TODO: Add validation
-	# (Need to figure out field length limits or any invalid characters)
+	def __post_init__(self):
+		"""Validate fields"""
+		
+		# TODO: Additional validation
+		# (Need to figure out any invalid characters)
+
+		if not self.user.strip() or len(self.user) > MAX_FIELD_LENGTH:
+			raise BinLogFieldLengthError(f"`user` field must be between 1 and {MAX_FIELD_LENGTH} characters long (got {len(self.user)}")
+		if not self.computer.strip() or len(self.computer) > MAX_FIELD_LENGTH:
+			raise BinLogFieldLengthError(f"`computer` field must be between 1 and {MAX_FIELD_LENGTH} characters long (got {len(self.computer)}")
 
 	def to_string(self) -> str:
 		"""Format the bin log entry as a string"""
