@@ -1,6 +1,6 @@
-# pybinlog
+# pybinhistory
 
-`pybinlog` reads and writes `.log` access log files, which accompany `.avb` Avid bins.  It includes data validation and convenience methods, such as the ability to "touch" a bin in one command.
+`pybinhistory` reads and writes `.log` access log files, which accompany `.avb` Avid bins.  It includes data validation and convenience methods, such as the ability to "touch" a bin in one command.
 
 >[!WARNING]
 >While the `.log` log file format is a very simple one, it is officially undocumented.  Use this library at your own risk -- I assume no responsibility for any damage to your
