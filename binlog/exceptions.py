@@ -3,3 +3,6 @@ class BinLogParseError(ValueError):
 
 class BinLogFieldLengthError(ValueError):
 	"""A log field is not a valid length (between 1 and MAX_FIELD_LENGTH chars)"""
+
+class BinLogInvalidFieldError(ValueError):
+	"""A log field contains invalid data"""

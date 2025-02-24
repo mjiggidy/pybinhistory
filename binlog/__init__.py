@@ -4,5 +4,5 @@ MAX_ENTRIES:int = 10
 DEFAULT_FILE_EXTENSION:str = ".log"
 """The expected file extension for bin log files"""
 
-from .exceptions import BinLogParseError, BinLogFieldLengthError
+from .exceptions import BinLogParseError, BinLogFieldLengthError, BinLogInvalidFieldError
 from .binlog import BinLog, BinLogEntry
