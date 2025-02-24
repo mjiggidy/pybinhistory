@@ -3,7 +3,7 @@ Given a path to an Avid project directory, print some interesting stats
 about the log files within.  Okay well I think it's pretty neat.
 """
 
-from binlog import BinLog, BinLogEntry
+from binhistory import BinLog, BinLogEntry
 import sys, pathlib
 
 USAGE = f"{pathlib.Path(__file__)} avid_project_dir"
