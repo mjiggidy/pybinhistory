@@ -97,13 +97,13 @@ if not logs_good:
 # Print me them stats
 
 print(f"{len(user_counts)} User Profile(s):")
-for user,count in user_counts.items():
+for user,count in sorted(user_counts.items(), key=lambda u: u[1], reverse=True):
 	print(f"{user.rjust(15)}  ({count} entries)")
 
 print("")
 
 print(f"{len(computer_counts)} System(s):")
-for computer,count in computer_counts.items():
+for computer,count in sorted(computer_counts.items(), key=lambda c: c[1], reverse=True):
 	print(f"{computer.rjust(15)}  ({count} entries)")
 
 print("")
