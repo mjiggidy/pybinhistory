@@ -106,13 +106,13 @@ class BinLogEntry:
 class BinLog:
 	"""An .avb access log"""
 
-	def __init__(self, entries:list[BinLogEntry]|None=None):
+	def __init__(self, entries:typing.Optional[typing.List[BinLogEntry]]=None):
 		if not all(isinstance(e, BinLogEntry) for e in entries):
 			raise BinLogTypeError("Entries must be of type `binlog.BinLogEntry`")
-		self._entries:list[BinLogEntry] = [e for e in entries] if entries else []
+		self._entries:typing.List[BinLogEntry] = [e for e in entries] if entries else []
 	
 	@property
-	def entries(self) -> list[BinLogEntry]:
+	def entries(self) -> typing.List[BinLogEntry]:
 		"""Iterate over the log entries"""
 		# TODO: Triple check that bin log entries usually are sorted by date...
 		#return self._entries
@@ -128,14 +128,14 @@ class BinLog:
 
 	# Readers
 	@classmethod
-	def from_path(cls, log_path:str, max_year:int|None=None) -> "BinLog":
+	def from_path(cls, log_path:str, max_year:typing.Optional[int]=None) -> "BinLog":
 		"""Load from an existing .log file"""
 		# NOTE: Encountered mac_roman, need to deal with older encodings sometimes
 		with open (log_path, "r") as log_handle:
 			return cls.from_stream(log_handle, max_year=max_year)
 	
 	@classmethod
-	def from_stream(cls, file_handle:typing.TextIO, max_year:int|None) -> "BinLog":
+	def from_stream(cls, file_handle:typing.TextIO, max_year:typing.Optional[int]=None) -> "BinLog":
 		"""Parse a log from an open file handle"""
 		import os
 		
@@ -159,7 +159,7 @@ class BinLog:
 		file_handle.write(self.to_string())
 
 	# Convenience methods	
-	def last_entry(self) -> BinLogEntry|None:
+	def last_entry(self) -> typing.Optional[BinLogEntry]:
 		"""Get the last/latest/most recent entry from a bin log"""
 		return self.entries[-1] if self.entries else  None
 	
