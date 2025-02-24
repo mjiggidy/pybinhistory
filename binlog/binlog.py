@@ -1,5 +1,5 @@
 import dataclasses, datetime, typing, getpass, socket
-from . import BinLogParseError, BinLogFieldLengthError, BinLogInvalidFieldError
+from . import BinLogParseError, BinLogFieldLengthError, BinLogInvalidFieldError, BinLogTypeError
 from . import MAX_ENTRIES, DEFAULT_FILE_EXTENSION
 
 MAX_FIELD_LENGTH:int = 15
@@ -107,6 +107,8 @@ class BinLog:
 	"""An .avb access log"""
 
 	def __init__(self, entries:list[BinLogEntry]|None=None):
+		if not all(isinstance(e, BinLogEntry) for e in entries):
+			raise BinLogTypeError("Entries must be of type `binlog.BinLogEntry`")
 		self._entries:list[BinLogEntry] = [e for e in entries] if entries else []
 	
 	@property
