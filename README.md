@@ -16,7 +16,7 @@ You can easily add an entry to the bin log with the `BinLog.touch()` convenience
 
 ```python
 from binlog import BinLog
-BinLog.touch("/path/to/bin.log", computer="avidmac", user="aviduser")
+BinLog.touch("/path/to/bin.log")
 ```
 
 ### Getting The Most Recent Entry
