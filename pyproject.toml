@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pybinhistory"
-version = "0.3.0"
+version = "0.3.1"
 authors = [{name = "Michael Jordan", email = "michael@glowingpixel.com"}]
 
 description = "A python package for programmatically reading, writing, and managing Avid Media Composer bin access history logs (`.log` files)."
