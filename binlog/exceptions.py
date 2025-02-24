@@ -6,3 +6,6 @@ class BinLogFieldLengthError(ValueError):
 
 class BinLogInvalidFieldError(ValueError):
 	"""A log field contains invalid data"""
+
+class BinLogTypeError(TypeError):
+	"""A log entry is not a valid type"""
