@@ -98,7 +98,7 @@ if not logs_good:
 
 print(f"{len(user_counts)} User Profile(s):")
 for user,count in user_counts.items():
-	print(f"{user.rjust()}  ({count} entries)")
+	print(f"{user.rjust(15)}  ({count} entries)")
 
 print("")
 
@@ -109,15 +109,15 @@ for computer,count in computer_counts.items():
 print("")
 
 if oldest_log:
-	print(f"Earliest log:  {oldest_log.timestamp.strftime(r'%Y %m %d @ %H:%M:%S')}")
-	print(f"   From file:  {oldest_log_path}")
-	print(f"  From entry:  {oldest_log.to_string()}")
+	print(f"  Earliest log:  {oldest_log.timestamp.strftime(r'%Y %m %d @ %H:%M:%S')}")
+	print(f"     From file:  {oldest_log_path}")
+	print(f"    From entry:  {oldest_log.to_string()}")
 
 print("")
 
 if newest_log:
-	print(f"  Latest log:  {newest_log.timestamp.strftime(r'%Y %m %d @ %H:%M:%S')}")
-	print(f"   From file:  {newest_log_path}")
-	print(f"  From entry:  {newest_log.to_string()}")
+	print(f"    Latest log:  {newest_log.timestamp.strftime(r'%Y %m %d @ %H:%M:%S')}")
+	print(f"     From file:  {newest_log_path}")
+	print(f"    From entry:  {newest_log.to_string()}")
 
 print("")
