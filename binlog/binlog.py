@@ -1,5 +1,5 @@
-import dataclasses, datetime, typing
-from . import BinLogParseError, BinLogFieldLengthError
+import dataclasses, datetime, typing, getpass, socket
+from . import BinLogParseError, BinLogFieldLengthError, BinLogInvalidFieldError
 from . import MAX_ENTRIES, DEFAULT_FILE_EXTENSION
 
 MAX_FIELD_LENGTH:int = 15
@@ -9,20 +9,23 @@ DATETIME_STRING_FORMAT:str = "%a %b %d %H:%M:%S"
 """Datetime string format for bin log entry (Example: Wed Dec 15 09:47:51)"""
 
 FIELD_START_USER:str       = "User: "
+DEFAULT_USER:str           = getpass.getuser()[:MAX_FIELD_LENGTH] or "Unknown"
+
 FIELD_START_COMPUTER:str   = "Computer: "
+DEFAULT_COMPUTER:str       = socket.gethostname()[:MAX_FIELD_LENGTH] or "Unknown"
 
 @dataclasses.dataclass(frozen=True)
 class BinLogEntry:
 	"""An entry in a bin log"""
 
-	timestamp:datetime.datetime
+	timestamp:datetime.datetime = dataclasses.field(default_factory=lambda: datetime.datetime.now())
 	"""Timestamp of last access"""
 
-	computer:str
+	computer:str = DEFAULT_COMPUTER
 	"""Hostname of the system which accessed the bin"""
 
-	user:str
-	"""Username which accessed the bin"""
+	user:str = DEFAULT_USER
+	"""User profile which accessed the bin"""
 
 	def __post_init__(self):
 		"""Validate fields"""
@@ -32,16 +35,24 @@ class BinLogEntry:
 
 		if not self.user.strip() or len(self.user) > MAX_FIELD_LENGTH:
 			raise BinLogFieldLengthError(f"`user` field must be between 1 and {MAX_FIELD_LENGTH} characters long (got {len(self.user)}")
+		if not self.user.isprintable():
+			raise BinLogInvalidFieldError(f"`user` field contains invalid characters")
 		if not self.computer.strip() or len(self.computer) > MAX_FIELD_LENGTH:
 			raise BinLogFieldLengthError(f"`computer` field must be between 1 and {MAX_FIELD_LENGTH} characters long (got {len(self.computer)}")
+		if not self.computer.isprintable():
+			raise BinLogInvalidFieldError(f"`computer` field contains invalid characters")
 
 	def to_string(self) -> str:
 		"""Format the bin log entry as a string"""
-		format_datetime = self.timestamp.strftime(DATETIME_STRING_FORMAT)
+		format_datetime       = self.timestamp.strftime(DATETIME_STRING_FORMAT)
 		format_entry_computer = FIELD_START_COMPUTER + self.computer
-		format_entry_user = FIELD_START_USER + self.user
+		format_entry_user     = FIELD_START_USER + self.user
 
-		return f"{format_datetime.ljust(21)}{format_entry_computer.ljust(26)}{format_entry_user.ljust(21)}"
+		return str().join([
+			format_datetime.ljust(21),
+			format_entry_computer.ljust(26),
+			format_entry_user.ljust(21)
+		])
 	
 	@classmethod
 	def from_string(cls, log_entry:str, max_year:int=datetime.datetime.now().year) -> "BinLogEntry":
@@ -92,8 +103,6 @@ class BinLogEntry:
 
 		raise ValueError(f"Could not determine a valid year for which {initial_date.month}/{initial_date.day} occurs on a {wkday}")
 	
-	
-	
 class BinLog:
 	"""An .avb access log"""
 
@@ -103,26 +112,19 @@ class BinLog:
 	@property
 	def entries(self) -> list[BinLogEntry]:
 		"""Iterate over the log entries"""
-		# TODO: Triple check bin log entries usually are sorted by date...
+		# TODO: Triple check that bin log entries usually are sorted by date...
 		#return self._entries
 		return sorted(self._entries, key=lambda e: e.timestamp)[-MAX_ENTRIES:]
 	
-	def to_string(self) -> str:
-		"""Format as string"""
-		return str().join(e.to_string() + "\n" for e in self.entries)
-	
-	def to_path(self, file_path:str):
-		"""Write log to filepath"""
-		with open(file_path, "w", encoding="utf-8") as output_handle:
-			self.to_stream(output_handle)
-	
-	def to_stream(self, file_handle:typing.TextIO):
-		"""Write log to given stream"""
-		file_handle.write(self.to_string())
-
 	def __iter__(self):
 		yield from self.entries
 
+	def to_string(self) -> str:
+		"""Format as string"""
+		return str().join(e.to_string() + "\n" for e in self.entries)
+
+
+	# Readers
 	@classmethod
 	def from_path(cls, log_path:str, max_year:int|None=None) -> "BinLog":
 		"""Load from an existing .log file"""
@@ -144,33 +146,41 @@ class BinLog:
 		
 		return cls(entries)
 
+	# Writers	
+	def to_path(self, file_path:str):
+		"""Write log to filepath"""
+		with open(file_path, "w", encoding="utf-8") as output_handle:
+			self.to_stream(output_handle)
 	
-	# Convenience methods
+	def to_stream(self, file_handle:typing.TextIO):
+		"""Write log to given stream"""
+		file_handle.write(self.to_string())
+
+	# Convenience methods	
+	def last_entry(self) -> BinLogEntry|None:
+		"""Get the last/latest/most recent entry from a bin log"""
+		return self.entries[-1] if self.entries else  None
+	
 	@classmethod
-	def touch(cls, log_path:str, computer:str, user:str, timestamp:datetime.datetime|None=None):
+	def touch(cls, log_path:str, entry:typing.Optional[BinLogEntry]=None):
 		"""Add an entry to a log file"""
 		import pathlib
 
-		entries = [BinLogEntry(
-			timestamp = timestamp or datetime.datetime.now(),
-			computer  = computer,
-			user      = user
-		)]
+		entries = [entry or BinLogEntry()]
 
 		# Read in any existing entries
-		if pathlib.Path(log_path).exists():
+		if pathlib.Path(log_path).is_file():
 			entries.extend(cls.from_path(log_path).entries)
 		
 		BinLog(entries).to_path(log_path)
-	
-	@classmethod
-	def last_entry(cls, log_path) -> BinLogEntry|None:
-		"""Get the last/latest entry from a bin log"""
-		entries = BinLog.from_path(log_path).entries
-		return entries[-1] if entries else  None
 	
 	@staticmethod
 	def log_path_from_bin_path(bin_path:str) -> str:
 		"""Determine the expected log path for a given bin path"""
 		import pathlib
 		return str(pathlib.Path(bin_path).with_suffix(DEFAULT_FILE_EXTENSION))
+	
+	def __repr__(self) -> str:
+		last_entry = self.last_entry()
+		last_entry_str = last_entry.to_string().rstrip() if last_entry else None
+		return f"<{self.__class__.__name__} entries={len(self.entries)} last_entry={last_entry_str}>"
