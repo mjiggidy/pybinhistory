@@ -58,13 +58,13 @@ class BinLogEntry:
 		# Computer name: Observed to be AT LEAST 15 characters.  Likely the max but need to check.
 		entry_computer = log_entry[21:47]
 		if not entry_computer.startswith(FIELD_START_COMPUTER):
-			raise BinLogParseError(f"Unexpected value encountered while parsing computer namme: \"{entry_computer}\"")
+			raise BinLogParseError(f"Unexpected value encountered while parsing computer name: \"{entry_computer}\"")
 		parsed_computer = entry_computer[10:].rstrip()
 
 		# User name: Observed to be max 15 characters (to end of line)
 		entry_user = log_entry[47:68]
 		if not entry_user.startswith(FIELD_START_USER):
-			raise BinLogParseError(f"Unexpected value encountered while parsing user namme: \"{entry_user}\"")
+			raise BinLogParseError(f"Unexpected value encountered while parsing user name: \"{entry_user}\"")
 		parsed_user = entry_user[6:].rstrip()
 
 		return cls(
@@ -99,7 +99,7 @@ class BinLog:
 	"""An .avb access log"""
 
 	def __init__(self, entries:typing.Optional[typing.List[BinLogEntry]]=None):
-		if not all(isinstance(e, BinLogEntry) for e in entries):
+		if entries and not all(isinstance(e, BinLogEntry) for e in entries):
 			raise BinLogTypeError("Entries must be of type `binlog.BinLogEntry`")
 		self._entries:typing.List[BinLogEntry] = [e for e in entries] if entries else []
 	
