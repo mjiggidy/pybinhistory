@@ -1,18 +1,10 @@
-import dataclasses, datetime, typing, getpass, socket
-from . import BinLogParseError, BinLogFieldLengthError, BinLogInvalidFieldError, BinLogTypeError
-from . import MAX_ENTRIES, DEFAULT_FILE_EXTENSION
+"""
+`BinLog` and `BinLogEntry` classes (a.k.a THE MEAT)
+"""
 
-MAX_FIELD_LENGTH:int = 15
-"""Max number of characters in User or Computer fields"""
-
-DATETIME_STRING_FORMAT:str = "%a %b %d %H:%M:%S"
-"""Datetime string format for bin log entry (Example: Wed Dec 15 09:47:51)"""
-
-FIELD_START_USER:str       = "User: "
-DEFAULT_USER:str           = getpass.getuser()[:MAX_FIELD_LENGTH] or "Unknown"
-
-FIELD_START_COMPUTER:str   = "Computer: "
-DEFAULT_COMPUTER:str       = socket.gethostname()[:MAX_FIELD_LENGTH] or "Unknown"
+import dataclasses, datetime, typing
+from .exceptions import BinLogParseError, BinLogFieldLengthError, BinLogInvalidFieldError, BinLogTypeError
+from .defaults import MAX_ENTRIES, DEFAULT_FILE_EXTENSION, DEFAULT_USER, DEFAULT_COMPUTER, MAX_FIELD_LENGTH, DATETIME_STRING_FORMAT, FIELD_START_COMPUTER, FIELD_START_USER
 
 @dataclasses.dataclass(frozen=True)
 class BinLogEntry:
@@ -128,6 +120,11 @@ class BinLog:
 
 	# Readers
 	@classmethod
+	def from_bin(cls, bin_path:str, max_year:typing.Optional[int]=None) -> "BinLog":
+		"""Load an existing .log file for a given bin"""
+		return cls.from_path(BinLog.log_path_from_bin_path(bin_path), max_year)
+
+	@classmethod
 	def from_path(cls, log_path:str, max_year:typing.Optional[int]=None) -> "BinLog":
 		"""Load from an existing .log file"""
 		# NOTE: Encountered mac_roman, need to deal with older encodings sometimes
@@ -148,7 +145,11 @@ class BinLog:
 		
 		return cls(entries)
 
-	# Writers	
+	# Writers
+	def to_bin(self, bin_path:str):
+		"""Write to a log for a given bin"""
+		self.to_path(BinLog.log_path_from_bin_path(bin_path))
+
 	def to_path(self, file_path:str):
 		"""Write log to filepath"""
 		with open(file_path, "w", encoding="utf-8") as output_handle:
@@ -175,6 +176,11 @@ class BinLog:
 			entries.extend(cls.from_path(log_path).entries)
 		
 		BinLog(entries).to_path(log_path)
+	
+	@classmethod
+	def touch_bin(cls, bin_path:str, entry:typing.Optional[BinLogEntry]=None):
+		"""Add an entry to a log file for a given bin"""
+		cls.touch(BinLog.log_path_from_bin_path(bin_path), entry)
 	
 	@staticmethod
 	def log_path_from_bin_path(bin_path:str) -> str:
