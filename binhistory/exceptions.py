@@ -1,3 +1,7 @@
+"""
+Bespoke `Exception`s raised by `pybinhistory`
+"""
+
 class BinLogParseError(ValueError):
 	"""An invalid value was encountered while parsing the log"""
 
