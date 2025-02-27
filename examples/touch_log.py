@@ -1,8 +1,8 @@
 """
-Given the path to a log file, append an entry via the `BinLog.touch()` convenience method
+Given the path to an Avid bin, append an entry via the `BinLog.touch()` convenience method
 """
 
-from binhistory import BinLog, BinLogEntry
+from binhistory import BinLog
 import sys
 
-BinLog.touch(sys.argv[1], BinLogEntry())
+BinLog.touch_bin(sys.argv[1])
