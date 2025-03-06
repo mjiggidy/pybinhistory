@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-###########
+############
 pybinhistory
-###########
-*Because ``pybinlog`` was taken™*
+############
+*Because* ``pybinlog`` *was taken™*
 
 ``pybinlog`` is a pypi package for the :mod:`binhistory` python library.
 
@@ -45,6 +45,18 @@ Interesting uses
 - Makes you look cool!  Everyone will be very impressed with you.  "Wow!" they'll say.
 
 See :doc:`usage` for examples!
+
+:mod:`binhistory` on the World Wide Web!
+========================================
+
++---------------------+----------------------------------------------------------+
+| PyPI Repository     | https://pypi.org/project/pybinhistory/                   |
++---------------------+----------------------------------------------------------+
+| Github Repository   | https://github.com/mjiggidy/pybinhistory/                |
++---------------------+----------------------------------------------------------+
+| Documentation       | https://pybinhistory.readthedocs.io/                     |
++---------------------+----------------------------------------------------------+
+
 
 See also
 --------
