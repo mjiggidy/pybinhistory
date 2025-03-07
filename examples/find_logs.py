@@ -51,8 +51,9 @@ for log_path in pathlib.Path(sys.argv[1]).rglob("*.log"):
 
 	# Read and print the log
 	try:
+		print(f"\033[K{log_path}:", end="\r", flush=True)
 		log = BinLog.from_path(log_path)
-		print(f"{log_path}: {log}")
+		print(f"\033[K{log_path}: {log}", end="\r")
 		logs_good += 1
 
 	except Exception as e:
@@ -61,8 +62,7 @@ for log_path in pathlib.Path(sys.argv[1]).rglob("*.log"):
 		continue
 
 	# Gather stats	
-	entries = log.entries
-	for entry in entries:
+	for entry in log:
 
 		# Count user
 		if entry.user not in user_counts:
@@ -75,15 +75,15 @@ for log_path in pathlib.Path(sys.argv[1]).rglob("*.log"):
 		computer_counts[entry.computer] += 1
 
 		# Get timestamp extremes
-		if not entries:
+		if not log:
 			continue
 
-		if not oldest_log or entries[0].timestamp < oldest_log.timestamp:
-			oldest_log = entries[0]
+		if not oldest_log or log[0].timestamp < oldest_log.timestamp:
+			oldest_log = log[0]
 			oldest_log_path = log_path
 
-		if not newest_log or entries[-1].timestamp > newest_log.timestamp:
-			newest_log = entries[-1]
+		if not newest_log or log[-1].timestamp > newest_log.timestamp:
+			newest_log = log[-1]
 			newest_log_path = log_path
 
 
