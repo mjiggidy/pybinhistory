@@ -82,24 +82,42 @@ class BinLogEntry:
 	
 	@staticmethod
 	def datetime_from_log_timestamp(timestamp:str, max_year:int|None=None) -> datetime.datetime:
-		"""Form a datetime from a given timestamp string"""
-		# NOTE: This is because timestamps in the .log file don't indicate the year, but they DO
-		# indicate the day of the week.  So, to get a useful `datetime` object out of this, "we"
-		# need to determine which year the month/day occurs on the particular day of the week
-		# using `max_year` as a starting point (likely a file modified date, or current year)
+		"""
+		Form a datetime from a given timestamp string
+		
+		This gets a little complicated  because timestamps in the .log file don't indicate the year, but they DO
+		indicate the day of the week.  So, to get a useful `datetime` object out of this, "we" need to determine 
+		which year the month/day occured on the particular day of the week using ``max_year`` as a starting point 
+		(likely a file modified date, or current year), and counting backwards until we get a good match.
+
+		Also accounting for Feb 29 leap year stuff.  It's been fun.
+		"""
+		
+		import calendar
 
 		if max_year is None:
 			max_year = datetime.datetime.now().year
 
-		# Make the initial datetime from known info
-		initial_date = datetime.datetime.strptime(timestamp, DATETIME_STRING_FORMAT)
+		# Account for leap year
+		needs_leapyear = "Feb 29" in timestamp
+		while needs_leapyear and not calendar.isleap(max_year):
+			max_year -= 1
 
-		# Also get the weekday from the timestamp string for comparison
+		# Make the initial datetime from known info
+		# NOTE: Appending `max_year` here primarily to avoid invalid leap year timestamps
+		initial_date = datetime.datetime.strptime(timestamp + " " + str(max_year), DATETIME_STRING_FORMAT + " %Y")
+
+		# Also get the weekday from the timestamp string to compare against the parsed datetime.datetime weekday
 		wkday = timestamp[:3]
 
-		# Search backwards up to 11 years
+		# Search backwards up to 11 years (when weekday/date pairs start repeating)
 		for year in range(max_year, max_year - 11, -1):
+
+			if needs_leapyear and not calendar.isleap(year):
+				continue
+
 			test_date = initial_date.replace(year=year)
+			
 			if test_date.strftime("%a") == wkday:
 				return test_date
 
