@@ -57,7 +57,7 @@ for log_path in pathlib.Path(sys.argv[1]).rglob("*.log"):
 		logs_good += 1
 
 	except Exception as e:
-		print(f"{log_path}: {e}", file=sys.stderr)
+		print(f"\033[K{log_path}: {e}", file=sys.stderr)
 		logs_bad += 1
 		continue
 
