@@ -26,14 +26,14 @@ class BinLogEntry:
 		if not isinstance(self.user, str):
 			raise BinLogInvalidFieldError(f"`user` field must be a string (got {repr(self.user)})")
 		elif not self.user.strip() or len(self.user) > MAX_FIELD_LENGTH:
-			raise BinLogFieldLengthError(f"`user` field must be between 1 and {MAX_FIELD_LENGTH} characters long (got {len(self.user)}")
+			raise BinLogFieldLengthError(f"`user` field must be between 1 and {MAX_FIELD_LENGTH} characters long (got {len(self.user)})")
 		elif not self.user.isprintable():
 			raise BinLogInvalidFieldError(f"`user` field contains invalid characters")
 
 		if not isinstance(self.computer, str):
 			raise BinLogInvalidFieldError(f"`computer` field must be a string (got {repr(self.computer)})")
 		elif not self.computer.strip() or len(self.computer) > MAX_FIELD_LENGTH:
-			raise BinLogFieldLengthError(f"`computer` field must be between 1 and {MAX_FIELD_LENGTH} characters long (got {len(self.computer)}")
+			raise BinLogFieldLengthError(f"`computer` field must be between 1 and {MAX_FIELD_LENGTH} characters long (got {len(self.computer)})")
 		elif not self.computer.isprintable():
 			raise BinLogInvalidFieldError(f"`computer` field contains invalid characters")
 		
@@ -53,7 +53,7 @@ class BinLogEntry:
 		])
 	
 	@classmethod
-	def from_string(cls, log_entry:str, max_year:int|None=None) -> "BinLogEntry":
+	def from_string(cls, log_entry:str, max_year:typing.Optional[int]=None) -> "BinLogEntry":
 		"""Return the log entry from a given log entry string"""
 
 		try:
@@ -81,12 +81,12 @@ class BinLogEntry:
 		)
 	
 	@staticmethod
-	def datetime_from_log_timestamp(timestamp:str, max_year:int|None=None) -> datetime.datetime:
+	def datetime_from_log_timestamp(timestamp:str, max_year:typing.Optional[int]=None) -> datetime.datetime:
 		"""
 		Form a datetime from a given timestamp string
 		
 		This gets a little complicated  because timestamps in the .log file don't indicate the year, but they DO
-		indicate the day of the week.  So, to get a useful `datetime` object out of this, "we" need to determine 
+		indicate the day of the week.  So, to get a useful :class:``datetime.datetime`` object out of this, "we" need to determine 
 		which year the month/day occured on the particular day of the week using ``max_year`` as a starting point 
 		(likely a file modified date, or current year), and counting backwards until we get a good match.
 
@@ -275,7 +275,7 @@ class BinLog(collections.UserList):
 	def log_path_from_bin_path(bin_path:str, missing_bin_ok:bool=True) -> str:
 		"""Determine the expected log path for a given bin path"""
 		import pathlib
-		if not missing_bin_ok and pathlib.Path(bin_path).is_file():
+		if not missing_bin_ok and not pathlib.Path(bin_path).is_file():
 			raise BinNotFoundError(f"An existing bin was not found at {bin_path}")
 		return str(pathlib.Path(bin_path).with_suffix(DEFAULT_FILE_EXTENSION))
 	
