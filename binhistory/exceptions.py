@@ -1,5 +1,5 @@
 """
-Bespoke ``Exception``\s raised by ``pybinhistory``
+Bespoke ``Exception`` classes raised by ``pybinhistory``
 """
 
 class BinLogParseError(ValueError):
@@ -13,3 +13,9 @@ class BinLogInvalidFieldError(ValueError):
 
 class BinLogTypeError(TypeError):
 	"""A log entry is not a valid type"""
+
+class BinLogNotFoundError(FileNotFoundError):
+	"""A log was not found at the given file path"""
+
+class BinNotFoundError(FileNotFoundError):
+	"""A bin was not found at the given file path"""
