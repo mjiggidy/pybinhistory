@@ -56,4 +56,4 @@ def test_binlog_last_entry():
 	entry1 = BinLogEntry(timestamp=datetime.datetime(2024, 2, 26, 10, 0), computer="PC1", user="Bob")
 	entry2 = BinLogEntry(timestamp=datetime.datetime(2024, 2, 26, 11, 0), computer="PC2", user="Alice")
 	log = BinLog([entry1, entry2])
-	assert log.last_entry().computer == "PC2"
+	assert log.latest_entry().computer == "PC2"
