@@ -144,6 +144,6 @@ my ``zMichael_LA`` machine.  Then we can blame me for things!
             print(f"{suspect} made changes to {bin_path}!")
 
 Writing logs
-============
+------------
 
 :meth:`.BinLog.touch_bin` will append 
