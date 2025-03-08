@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.abspath(".."))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
 #    "sphinx.ext.napoleon",
 #    "sphinx.ext.viewcode",
     "sphinx.ext.githubpages"
@@ -30,6 +31,10 @@ autodoc_default_options = {
     "undoc-members": True,
     "show-inheritance": True,
 #    "special-members": "__init__",
+}
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
 }
 
 autodoc_member_order = "bysource"
