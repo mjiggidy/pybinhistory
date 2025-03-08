@@ -1,6 +1,10 @@
 API Reference
 =============
 
+.. automodule:: binhistory
+   :members:
+
+
 Classes
 -------
 
@@ -8,8 +12,8 @@ Classes
    :toctree: generated
    :recursive:
 
-   binhistory.BinLog
-   binhistory.BinLogEntry
+   BinLog
+   BinLogEntry
 
 Submodules
 ----------
@@ -18,5 +22,5 @@ Submodules
    :toctree: generated
    :recursive:
 
-   binhistory.defaults
-   binhistory.exceptions
+   defaults
+   exceptions
