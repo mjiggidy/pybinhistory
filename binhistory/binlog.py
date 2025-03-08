@@ -58,7 +58,7 @@ class BinLogEntry:
 
 		try:
 			entry_datetime   = log_entry[0:19]
-			parsed_timestamp = cls.datetime_from_log_timestamp(entry_datetime, max_year)
+			parsed_timestamp = cls._datetime_from_log_timestamp(entry_datetime, max_year)
 		except ValueError as e:
 			raise BinLogParseError(f"Unexpected value encountered while parsing access time \"{entry_datetime}\" (Assuming a max year of {max_year}): {e}") from e
 		
@@ -81,7 +81,7 @@ class BinLogEntry:
 		)
 	
 	@staticmethod
-	def datetime_from_log_timestamp(timestamp:str, max_year:typing.Optional[int]=None) -> datetime.datetime:
+	def _datetime_from_log_timestamp(timestamp:str, max_year:typing.Optional[int]=None) -> datetime.datetime:
 		"""
 		Form a datetime from a given timestamp string
 		
@@ -252,6 +252,10 @@ class BinLog(collections.UserList):
 	def computers(self) -> typing.List[str]:
 		"""Get a list of unique computers in the log"""
 		return list(set(e.computer for e in self))
+	
+	def timestamps(self) -> typing.List[datetime.datetime]:
+		"""Get a list of unique timestamps in the log"""
+		return list(set(e.timestamp for e in self))
 	
 	@classmethod
 	def touch(cls, log_path:str, entry:typing.Optional[BinLogEntry]=None):
