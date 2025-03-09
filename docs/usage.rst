@@ -182,6 +182,51 @@ my ``zMichael`` machine.  Now we can blame me for things!
 
 .. _usage-writing:
 
+Working with log entries
+------------------------
+
+As mentioned earlier, a :class:`BinLogEntry` object is a :func:`dataclass <dataclasses.dataclass>` that represents a single log entry.  
+It comes with default values set for each of the fields, so let's check that out first:
+
+.. code-block:: python
+    :linenos:
+
+    from binlog import BinLogEntry
+
+    print(BinLogEntry())
+
+Output:
+
+.. code-block:: none
+
+    BinLogEntry(timestamp=datetime.datetime(2025, 3, 8, 15, 27, 25, 76253), computer='zMichael', user='mjordan')
+
+Nice!  We see :attr:`timestamp <.BinLogEntry.timestamp>` defaults to the current datetime.  :attr:`computer <.BinLogEntry.computer>` 
+defaults to the hostname of my machine, and :attr:`user <.BinLogEntry.user>` defaults to the username executing the script.
+
+.. note::
+    
+    Those default values can be changed, on a per-script basis, by modifying the constants defined in the :mod:`.defaults` module.
+
+Now, those first two are in line with the data Avid would use for the log entry under normal circumstances.  But 
+for :attr:`user <.BinLogEntry.user>`\, typically Avid would use the name of the current Avid user profile.  So let's specify 
+that field:
+
+.. code-block:: python
+    :linenos:
+
+    from binlog import BinLogEntry
+
+    print(BinLogEntry(user="MJ 2023.12.2"))
+
+Output:
+
+.. code-block:: none
+
+    BinLogEntry(timestamp=datetime.datetime(2025, 3, 8, 15, 28, 29, 47132), computer='zMichael', user='MJ 2023.12.2')
+
+Cool.  This matches exactly what Avid would normally use for a bin entry.
+
 Writing logs
 ------------
 
