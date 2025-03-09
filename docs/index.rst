@@ -3,12 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-############
 pybinhistory
-############
+============
 *Because* ``pybinlog`` *was taken™*
 
-``pybinlog`` is a pypi package for the :mod:`binhistory` python library.
+``pybinhistory`` is a pypi package for the :mod:`binhistory` python library.
 
 :mod:`binhistory` is a python library for programmatically reading and writing Avid bin logs (``.log``) files in 
 Avid Media Composer projects.
@@ -21,7 +20,7 @@ Avid Media Composer projects.
    out of sync in the latest version of the reel.
 
 About Avid bin logs
-===================
+-------------------
 
 An Avid bin log is a ``.log`` file that lives alongside an Avid bin (``.avb`` or ``.avs``) file in a multi-user 
 Avid environment.  It maintains a history of the most recent modifications made to the contents of the bin.
@@ -33,7 +32,7 @@ By default, the log file contains a maximum of 10 log entries.  Each log entry c
 - The name of the user profile that made the modification
 
 About :mod:`binhistory`
-=======================
+-----------------------
 
 The :mod:`binhistory` library enables developers to safely create, read, and modify valid bin logs programmatically.
 
@@ -47,7 +46,7 @@ Interesting uses
 See :doc:`usage` for examples!
 
 :mod:`binhistory` on the World Wide Web!
-========================================
+----------------------------------------
 
 +---------------------+----------------------------------------------------------+
 | PyPI Repository     | https://pypi.org/project/pybinhistory/                   |

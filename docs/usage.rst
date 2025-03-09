@@ -4,18 +4,33 @@ Usage
 The main things to know
 -----------------------
 
-:class:`.BinLog` represents a bin ``.log``\.  It behaves as a list of :class:`.BinLogEntry` entries:
+:class:`.BinLog`
+~~~~~~~~~~~~~~~~
+
+:class:`.BinLog` represents an Avid bin's history log.
 
 .. autoclass:: binhistory.BinLog
     :no-members:
     :noindex:
 
-:class:`.BinLogEntry` is a :func:`dataclass <dataclasses.dataclass>` representing a 
-single entry in a log:
+:class:`.BinLog` behaves as a list of :class:`.BinLogEntry` objects.  It can be used to :ref:`read <usage-reading>`, 
+:ref:`process <usage-modifying>` and :ref:`write <usage-writing>` properly-formatted ``.log`` files.
+
+:class:`.BinLogEntry`
+~~~~~~~~~~~~~~~~~~~~~
+
+:class:`.BinLogEntry` is a :func:`dataclass <dataclasses.dataclass>` which represents one entry in such a log.
 
 .. autoclass:: binhistory.BinLogEntry
     :no-members:
     :noindex:
+
+
+Per the ``.log`` file spec, a :class:`.BinLogEntry` has fields for the :attr:`timestamp <.BinLogEntry.timestamp>` of the 
+entry, the :attr:`computer <.BinLogEntry.computer>` (host name) of the machine that made the modification, and the 
+:attr:`user <.BinLogEntry.user>` (Avid user profile name) that was operating that computer.
+
+.. _usage-reading:
 
 Reading existing logs
 ---------------------
@@ -63,10 +78,12 @@ Here's an example output from an Avid bin that has been modified four times:
     day-of-the-month combo is found.
 
     This seems to work quite well for active projects, but be aware of this for cases when file modified dates 
-    are inaccurate; for example archived projects that may have adopted modern modification dates when they were 
-    restored.  In these cases, you can pass a custom ``max_year`` argument to override the "file modified year" 
-    thing to get a more accurate date.
+    are inaccurate --- for example, archived projects that may have adopted modern modification dates when they were 
+    restored.
+    
+    In these cases, you can pass a custom year as an :class:`int` to the ``max_year`` argument to override the "file modified year" to get a more accurate date.
 
+.. _usage-modifying:
 
 Working with logs
 -----------------
@@ -157,6 +174,8 @@ my ``zMichael`` machine.  Now we can blame me for things!
         
         if suspect in log.computers():
             print(f"{suspect} made changes to {bin_path}!")
+
+.. _usage-writing:
 
 Writing logs
 ------------
