@@ -36,13 +36,13 @@ def test_binlog_entry_from_string_invalid():
 
 def test_binlog_datetime_parsing():
     test_timestamp = "Mon Mar 04 12:34:56"
-    parsed_date = BinLogEntry.datetime_from_log_timestamp(test_timestamp, max_year=2024)
+    parsed_date = BinLogEntry._datetime_from_log_timestamp(test_timestamp, max_year=2024)
     assert isinstance(parsed_date, datetime.datetime)
     assert parsed_date.year == 2024  # Ensures it picks the correct year
 
 def test_binlog_datetime_parsing_invalid():
     with pytest.raises(ValueError):
-        BinLogEntry.datetime_from_log_timestamp("InvalidTimestamp")
+        BinLogEntry._datetime_from_log_timestamp("InvalidTimestamp")
 
 def test_binlog_operations():
     entries = [BinLogEntry(user=f"user{i}") for i in range(3)]
