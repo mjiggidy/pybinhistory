@@ -5,6 +5,7 @@ Once you have :doc:`installed <installation>` the ``pybinhistory`` package, you 
 the :mod:`binhistory` module.
 
 .. code-block:: python
+    :linenos:
 
     import binhistory
 
@@ -17,6 +18,7 @@ Read an Avid bin's log
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
+    :linenos:
 
     from binhistory import BinLog
 
@@ -26,7 +28,7 @@ Read an Avid bin's log
 
 :class:`binhistory.BinLog` behaves as a list of :class:`binhistory.BinLogEntry` objects.  Example Output:
 
-.. code-block:: bash
+.. code-block:: none
 
     BinLogEntry(timestamp=datetime.datetime(2024, 8, 29, 17, 27, 12), computer='zJoy', user='joyjoy')
     BinLogEntry(timestamp=datetime.datetime(2024, 8, 30, 14, 16, 42), computer='zMichael', user='mjordan')
@@ -37,6 +39,7 @@ Append an entry to a bin's log
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
+    :linenos:
 
    from binhistory import BinLog, BinLogEntry
 

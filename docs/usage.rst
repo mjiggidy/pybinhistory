@@ -30,6 +30,8 @@ Per the ``.log`` file spec, a :class:`.BinLogEntry` has fields for the :attr:`ti
 entry, the :attr:`computer <.BinLogEntry.computer>` (host name) of the machine that made the modification, and the 
 :attr:`user <.BinLogEntry.user>` (Avid user profile name) that was operating that computer.
 
+See :ref:`bout-dem-logs` for more information about Avid bin logs.
+
 .. _usage-reading:
 
 Reading existing logs
@@ -45,6 +47,7 @@ If no ``.log`` file exists for the given bin, :class:`.exceptions.BinLogNotFound
 So to read the log for the Avid bin ``01_Edits/Reel 1.avb``:
 
 .. code-block:: python
+    :linenos:
 
     from binhistory import BinLog
     from binhistory.exceptions import BinLogNotFoundError
@@ -61,7 +64,7 @@ So to read the log for the Avid bin ``01_Edits/Reel 1.avb``:
 
 Here's an example output from an Avid bin that has been modified four times:
 
-.. code-block:: bash
+.. code-block:: none
 
     BinLogEntry(timestamp=datetime.datetime(2024, 8, 29, 17, 27, 12), computer='zJoy', user='joyjoy')
     BinLogEntry(timestamp=datetime.datetime(2024, 8, 30, 14, 10, 16), computer='zMichael', user='mjordan')
@@ -111,6 +114,7 @@ you're not gonna believe this:
 These methods will return :obj:`None` if the :class:`.BinLog` has no :class:`.BinLogEntry`\s.
 
 .. code-block:: python
+    :linenos:
 
     from binhistory import BinLog
     from binhistory.exceptions import BinLogNotFoundError
@@ -131,7 +135,7 @@ These methods will return :obj:`None` if the :class:`.BinLog` has no :class:`.Bi
 
 Example output:
 
-.. code-block:: bash
+.. code-block:: none
 
     01_EDITS/Reel 1.avb was last modified by zTimmy on 2025-02-22 18:05:43
 
@@ -153,6 +157,7 @@ As an example, let's get a list of all the bins that have been recently modified
 my ``zMichael`` machine.  Now we can blame me for things!
 
 .. code-block:: python
+    :linenos:
     
     import pathlib
     from binhistory import BinLog
@@ -203,6 +208,7 @@ If no ``.log`` exists for the Avid bin, one will be created.
 In this example, imagine it's... oh I don't know... 3:27pm on March 8, 2025.
 
 .. code-block:: python
+    :linenos:
     
     from binhistory import BinLog
 
@@ -216,6 +222,6 @@ In this example, imagine it's... oh I don't know... 3:27pm on March 8, 2025.
 
 The latest entry shows my touch:
 
-.. code-block:: bash
+.. code-block:: none
 
     BinLogEntry(timestamp=datetime.datetime(2025, 3, 8, 15, 27, 25, 76253), computer='zMichael', user='mjordan')
