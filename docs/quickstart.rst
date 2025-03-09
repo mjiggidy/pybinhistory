@@ -26,7 +26,7 @@ Read an Avid bin's log
     for entry in log:
         print(entry)
 
-:class:`binhistory.BinLog` behaves as a list of :class:`binhistory.BinLogEntry` objects.  Example Output:
+:class:`.BinLog` behaves as a list of :class:`.BinLogEntry` objects.  Example Output:
 
 .. code-block:: none
 
@@ -39,7 +39,7 @@ Append an entry to a bin's log
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
-    :linenos:
+   :linenos:
 
    from binhistory import BinLog, BinLogEntry
 
