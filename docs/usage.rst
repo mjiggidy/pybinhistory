@@ -7,30 +7,99 @@ The main things to know
 :class:`.BinLog`
 ~~~~~~~~~~~~~~~~
 
-:class:`.BinLog` represents an Avid bin's history log.
-
-.. autoclass:: binhistory.BinLog
-    :no-members:
-    :noindex:
-
-:class:`.BinLog` behaves as a list of :class:`.BinLogEntry` objects.  It can be used to :ref:`read <usage-reading>`, 
-:ref:`process <usage-modifying>` and :ref:`write <usage-writing>` properly-formatted ``.log`` files.
+:class:`.BinLog` represents an Avid bin's history log.  It behaves as a list of :class:`.BinLogEntry` objects, and can be 
+used to :ref:`read <usage-reading>`, :ref:`process <usage-modifying>` and :ref:`write <usage-writing>` properly-formatted ``.log`` files.
 
 :class:`.BinLogEntry`
 ~~~~~~~~~~~~~~~~~~~~~
 
-:class:`.BinLogEntry` is a :func:`dataclass <dataclasses.dataclass>` which represents one entry in such a log.
+:class:`.BinLogEntry` is a :func:`dataclass <dataclasses.dataclass>` which represents one entry in such a log.  Per the ``.log`` file spec, 
+a :class:`.BinLogEntry` has the following fields:
 
-.. autoclass:: binhistory.BinLogEntry
-    :no-members:
-    :noindex:
+.. list-table::
+   :header-rows: 1
 
+   * - Field
+     - Purpose
+     - Default Value
+   * - :attr:`.BinLogEntry.timestamp`
+     - Timestamp of the modification
+     - :meth:`datetime.datetime.now`
+   * - :attr:`.BinLogEntry.computer`
+     - Name of the machine that made the modification
+     - :data:`.defaults.DEFAULT_COMPUTER`
+   * - :attr:`.BinLogEntry.user`
+     - Avid user profile name that made the modification
+     - :data:`.defaults.DEFAULT_USER`
 
-Per the ``.log`` file spec, a :class:`.BinLogEntry` has fields for the :attr:`timestamp <.BinLogEntry.timestamp>` of the 
-entry, the :attr:`computer <.BinLogEntry.computer>` (host name) of the machine that made the modification, and the 
-:attr:`user <.BinLogEntry.user>` (Avid user profile name) that was operating that computer.
 
 See :ref:`bout-dem-logs` for more information about Avid bin logs.
+
+Creating new bin logs
+---------------------
+
+Although it's more likely you'll be working with :ref:`existing logs <usage-reading>`\, let's start by making 
+one from scratch, just to get some concepts down.
+
+.. code-block:: python
+    :caption: Creating a new bin log
+    :linenos:
+
+    from binhistory import BinLog, BinLogEntry
+
+    my_kewl_log = BinLog()
+
+    # Add a BinLogEntry with default values
+    my_kewl_log.append(BinLogEntry())
+
+    # Add a BinLogEntry with specified `computer` and `user` values
+    my_kewl_log.append(BinLogEntry(computer="zAutomation", user="otto"))
+
+    # Let's see those entries
+    for entry in my_kewl_log:
+        print(entry)
+    
+Here's the example output:
+
+.. code-block:: none
+
+    BinLogEntry(timestamp=datetime.datetime(2025, 3, 9, 16, 5, 59, 112426), computer='zMichael', user='mjordan')
+    BinLogEntry(timestamp=datetime.datetime(2025, 3, 9, 16, 5, 59, 112437), computer='zAutomation', user='otto')
+
+The first entry uses default values for :attr:`timestamp <.BinLogEntry.timestamp>`\, :attr:`computer <.BinLogEntry.computer>`\, 
+and :attr:`user <.BinLogEntry.user>`\. The second entry still uses the default :attr:`timestamp <.BinLogEntry.timestamp>`\, but 
+has our custom :attr:`computer <.BinLogEntry.computer>` and :attr:`user <.BinLogEntry.user>` values.
+
+
+Now let's see how :class:`.BinLog` would format this for the ``.log`` file, with :meth:`.BinLog.to_string`\:
+
+.. code-block:: python
+    :caption: Creating a new bin log (cont'd)
+    :linenos:
+    :lineno-start: 14
+
+    print(my_kewl_log.to_string())
+
+Output:
+
+.. code-block:: none
+
+    Sun Mar 09 16:05:59  Computer: thinklad        User: mjordan        
+    Sun Mar 09 16:05:59  Computer: zAutomation     User: otto           
+    
+
+Great!  So let's write this out as a ``.log`` for our ``Reel 1.avb`` Avid bin with :meth:`.BinLog.to_bin`
+
+.. code-block:: python
+    :caption: Creating a new bin log (cont'd)
+    :linenos:
+    :lineno-start: 15
+
+    my_kewl_log.to_bin("01_Edits/Reel 1.avb")
+
+.. caution::
+
+    :meth:`.BinLog.to_bin` will overwrite an existing ``.log``
 
 .. _usage-reading:
 
@@ -71,17 +140,17 @@ Here's an example output from an Avid bin that has been modified four times:
     BinLogEntry(timestamp=datetime.datetime(2024, 8, 30, 14, 16, 42), computer='zMichael', user='mjordan')
     BinLogEntry(timestamp=datetime.datetime(2025, 2, 22, 18, 5, 43), computer='zTimmy', user='user')
 
-.. admonition:: A Gentle Word Of Caution
+.. admonition:: About Those Timestamps...
 
-    The ``.log`` file format does not specify years in its log entry timestamps; however it does specify the name of 
-    the day of the week.
+    The ``.log`` file spec does not specify the year in its log entry timestamp format; however it does specify the name of 
+    the day of the week (Mon, Tue, Wed).
 
-    When parsing entries from a ``.log`` file, a best guess of the year is made by starting with the year of 
-    the file modified date, and looking backwards through the years until a valid day-of-the-week + 
-    day-of-the-month combo is found.
+    When parsing each entry from a ``.log`` file, the year is inferred by fetching the year of 
+    the file modified date of the ``.log`` as a starting point, and looking backwards through the years until a valid "day-of-the-week + 
+    day-of-the-month" combo is found in the calendar.
 
     This seems to work quite well for active projects, but be aware of this for cases when file modified dates 
-    are inaccurate --- for example, archived projects that may have adopted modern modification dates when they were 
+    are inaccurate --- for example, archived projects that may not have maintained their original file modification dates when they were 
     restored.
     
     In these cases, you can pass a custom year as an :class:`int` to the ``max_year`` argument to override the "file modified year" to get a more accurate date.
@@ -94,13 +163,39 @@ Working with logs
 As a list
 ~~~~~~~~~
 
-*Something something*
+Since :class:`.BinLog` is a python :class:`collections.UserList` of :class:`.BinLogEntry` objects, you can do all the usual list-y kinds of things.
+
+.. code-block:: python
+    :linenos:
+
+    from binhistory import BinLog, BinLogEntry
+    from binhistory.exceptions import BinLogTypeError
+
+    # Create a log with 5 entries
+    my_log = BinLog([BinLogEntry(), BinLogEntry(), BinLogEntry(), BinLogEntry(), BinLogEntry()])
+
+    # Get the third entry
+    some_entry = my_log[2]
+
+    # Modify the third entry
+    my_log[2] = some_entry.copy_with(computer="zSomething")
+
+    # Add a couple more entries
+    my_log.extend([BinLogEntry(computer="zNew"), BinLogEntry(user="Another")])
+
+    # Count the entries
+    print(f"my_log has {len(my_log)} entries.")
+
+    # Note: `BinLog` will only accept `BinLogEntry`s
+    try:
+        my_log.append("Heehee oops")
+    except BinLogTypeError as e:
+        print(f"This didn't work: {e}")
+
+
 
 Convenience methods
 ~~~~~~~~~~~~~~~~~~~
-
-Extents
-^^^^^^^
 
 Often you may be interested in only the earliest or the last entry in the log.  Well, buddy, 
 you're not gonna believe this:
@@ -138,9 +233,6 @@ Example output:
 .. code-block:: none
 
     01_EDITS/Reel 1.avb was last modified by zTimmy on 2025-02-22 18:05:43
-
-Stats
-^^^^^
 
 You can also get lists of unique field values in a log with the following:
 
