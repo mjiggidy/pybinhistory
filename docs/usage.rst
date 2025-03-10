@@ -86,7 +86,7 @@ Output:
 
 .. code-block:: none
 
-    Sun Mar 09 16:05:59  Computer: thinklad        User: mjordan        
+    Sun Mar 09 16:05:59  Computer: zMichael        User: mjordan        
     Sun Mar 09 16:05:59  Computer: zAutomation     User: otto           
     
 
