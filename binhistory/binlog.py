@@ -40,6 +40,11 @@ class BinLogEntry:
 		if not isinstance(self.timestamp, datetime.datetime):
 			raise BinLogInvalidFieldError(f"`timestamp` field must be a valid `datetime.datetime` object (got {repr(self.timestamp)})")
 
+	def copy_with(self, **fields):
+		"""Creates a copy of this `BinLogEntry`, with optional changes to specified fields"""
+		from dataclasses import replace
+		return replace(self, **fields)
+	
 	def to_string(self) -> str:
 		"""Format the bin log entry as a string"""
 		format_datetime       = self.timestamp.strftime(DATETIME_STRING_FORMAT)
@@ -135,7 +140,7 @@ class BinLog(collections.UserList):
 		try:
 			entries = list(entries)
 		except TypeError as e:
-			raise BinLogTypeError(f"`BinLog` must be initialized with an iterable of `BinLogEntry`s, or `None` (got {repr(entries)})") from e
+			raise BinLogTypeError(f"`BinLog` must be initialized with an iterable of `BinLogEntry`s, or `None` (got {type(entries).__name__})") from e
 
 		for entry in entries:
 			self._validate_item(entry)
@@ -147,7 +152,7 @@ class BinLog(collections.UserList):
 	def _validate_item(item:typing.Any):
 		"""Validate an item is the proper type"""
 		if not isinstance(item, BinLogEntry):
-			raise BinLogTypeError(f"Entries must be of type `BinLogEntry` (got {repr(item)})")
+			raise BinLogTypeError(f"Entries must be of type `BinLogEntry` (got {type(item).__name__})")
 	
 	def __iter__(self) -> typing.Iterator[BinLogEntry]:
 		# For typehints
@@ -178,7 +183,7 @@ class BinLog(collections.UserList):
 		return super().append(item)
 	
 	def extend(self, other):
-		self._validate_item(other)
+		[self._validate_item(o) for o in other]
 		return super().extend(other)
 	
 	# Formatters
