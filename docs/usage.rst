@@ -256,7 +256,8 @@ my ``zMichael`` machine.  Now we can blame me for things!
     from binhistory.exceptions import BinLogNotFoundError
 
     suspect = "zMichael"
-
+    
+    # Get all the Avid bins in a project
     for bin_path in pathlib.Path("/Volumes/Important Avid Project/").rglob("*.avb"):
 
         if bin_path.name.startswith("."):
@@ -264,6 +265,7 @@ my ``zMichael`` machine.  Now we can blame me for things!
             continue
 
         try:
+            # Read the log for this bin
             log = BinLog.from_bin(bin_path)
         except BinLogNotFoundError:
             # Skip bins without logs
