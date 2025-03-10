@@ -281,7 +281,7 @@ my ``zMichael`` machine.  Now we can blame me for things!
 Working with log entries
 ------------------------
 
-As mentioned earlier, a :class:`BinLogEntry` object is a :func:`dataclass <dataclasses.dataclass>` that represents a single log entry.  
+As mentioned earlier, a :class:`.BinLogEntry` object is a :func:`dataclass <dataclasses.dataclass>` that represents a single log entry.  
 It comes with :ref:`default values <usage-entry-fields>` set for each of the fields, so let's check that out first:
 
 .. code-block:: python
