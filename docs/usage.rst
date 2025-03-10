@@ -13,6 +13,8 @@ used to :ref:`read <usage-reading>`, :ref:`process <usage-modifying>` and :ref:`
 :class:`.BinLogEntry`
 ~~~~~~~~~~~~~~~~~~~~~
 
+.. _usage-entry-fields:
+
 :class:`.BinLogEntry` is a :func:`dataclass <dataclasses.dataclass>` which represents one entry in such a log.  Per the ``.log`` file spec, 
 a :class:`.BinLogEntry` has the following fields:
 
@@ -280,7 +282,7 @@ Working with log entries
 ------------------------
 
 As mentioned earlier, a :class:`BinLogEntry` object is a :func:`dataclass <dataclasses.dataclass>` that represents a single log entry.  
-It comes with default values set for each of the fields, so let's check that out first:
+It comes with :ref:`default values <usage-entry-fields>` set for each of the fields, so let's check that out first:
 
 .. code-block:: python
     :linenos:
