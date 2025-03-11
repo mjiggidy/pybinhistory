@@ -32,6 +32,14 @@ class TestBinLog(unittest.TestCase):
 
 		self.assertEqual(BinLog.log_path_from_bin_path(PATH_BIN), PATH_LOG)
 
+		log_raw    = pathlib.Path(PATH_LOG).read_text(encoding="utf-8")
+		log_parsed = BinLog.from_bin(PATH_BIN)
+		self.assertEqual(log_parsed.to_string(), log_raw)
+
+		log_parsed.append(log_parsed.earliest_entry().copy_with(computer="Heehee"))
+		self.assertEqual(log_parsed.to_string(), log_raw)
+
+
 
 
 if __name__ == "__main__":
