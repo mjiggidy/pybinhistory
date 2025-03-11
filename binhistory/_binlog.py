@@ -66,7 +66,8 @@ class BinLog(collections.UserList):
 	
 	def extend(self, other):
 		try:
-			[self._validate_item(o) for o in other]
+			for o in other:
+				self._validate_item(o)
 		except TypeError as e:
 			raise BinLogTypeError(e) from e
 		return super().extend(other)
