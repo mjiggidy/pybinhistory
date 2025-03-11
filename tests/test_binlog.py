@@ -1,4 +1,4 @@
-import unittest, tempfile, pathlib, time
+import unittest, tempfile, pathlib, time, datetime
 from binhistory import BinLog, BinLogEntry, exceptions, defaults
 
 PATH_BIN = str(pathlib.Path(__file__).with_name("example.avb"))
@@ -93,6 +93,18 @@ class TestBinLog(unittest.TestCase):
 			# Fail non-existing bin
 			with self.assertRaises(exceptions.BinNotFoundError):
 				existing_log.to_bin(temp_dir/"poopoo.avb", missing_bin_ok=False)
+	
+			# Test MAX_ENTRIES by adding an additional and making sure they're rotated properly
+			max_log = BinLog.from_path(PATH_LOG)
+			curr_timestamp = datetime.datetime.now().replace(microsecond=0)
+			max_log.append(BinLogEntry(timestamp=curr_timestamp))			
+			self.assertEqual(len(max_log), defaults.MAX_ENTRIES+1)
+			max_log.to_path(temp_dir/"overflow.log")
+
+			max_log_check = BinLog.from_path(temp_dir/"overflow.log")
+			self.assertEqual(len(max_log_check), defaults.MAX_ENTRIES)
+			self.assertEqual(max_log_check.latest_entry().timestamp, curr_timestamp)
+			self.assertEqual(max_log_check.earliest_entry().timestamp, max_log[1].timestamp)
 	
 	def test_touch(self):
 
