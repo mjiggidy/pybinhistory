@@ -1,14 +1,12 @@
 """
-`BinLog` and `BinLogEntry` classes (a.k.a THE MEAT)
+`BinLog` class (a.k.a THE MEAT)
 """
 
-import collections.abc
-import datetime, typing
+import collections, datetime, typing
+
 from ._binlogentry import BinLogEntry
 from .defaults import MAX_ENTRIES, DEFAULT_FILE_EXTENSION
 from .exceptions import BinLogTypeError, BinLogNotFoundError, BinNotFoundError
-
-
 
 class BinLog(collections.UserList):
 	"""An .avb access log"""
@@ -126,11 +124,11 @@ class BinLog(collections.UserList):
 	# Convenience methods	
 	def earliest_entry(self) -> typing.Optional[BinLogEntry]:
 		"""Get the first/earliest entry from a bin log"""
-		return sorted(self)[0] if self else None
+		return min(self) if self else None
 
 	def latest_entry(self) -> typing.Optional[BinLogEntry]:
 		"""Get the last/latest/most recent entry from a bin log"""
-		return sorted(self)[-1] if self else None
+		return max(self) if self else None
 	
 	def users(self) -> typing.List[str]:
 		"""Get a list of unique users in the log"""
@@ -169,7 +167,7 @@ class BinLog(collections.UserList):
 		if not missing_bin_ok and not pathlib.Path(bin_path).is_file():
 			raise BinNotFoundError(f"An existing bin was not found at {bin_path}")
 		return str(pathlib.Path(bin_path).with_suffix(DEFAULT_FILE_EXTENSION))
-	
+
 	def __repr__(self) -> str:
 		last_entry = self.latest_entry()
 		last_entry_str = last_entry.to_string().rstrip() if last_entry else None
