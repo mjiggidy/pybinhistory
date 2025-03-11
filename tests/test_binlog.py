@@ -108,8 +108,6 @@ class TestBinLog(unittest.TestCase):
 	
 	def test_touch(self):
 
-		import socket, getpass
-
 		hostname = defaults.DEFAULT_COMPUTER
 		username = defaults.DEFAULT_USER
 
