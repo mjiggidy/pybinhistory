@@ -1,4 +1,4 @@
-import unittest, datetime, pathlib
+import unittest, tempfile, pathlib, time
 from binhistory import BinLog, BinLogEntry, exceptions, defaults
 
 PATH_BIN = str(pathlib.Path(__file__).with_name("example.avb"))
@@ -38,9 +38,98 @@ class TestBinLog(unittest.TestCase):
 
 		log_parsed.append(log_parsed.earliest_entry().copy_with(computer="Heehee"))
 		self.assertEqual(log_parsed.to_string(), log_raw)
+	
+	def test_from_bin_missing(self):
 
+		with self.assertRaises(exceptions.BinNotFoundError):
+			BinLog.from_bin("example2.avb", missing_bin_ok=False)
+		
+		with self.assertRaises(exceptions.BinLogNotFoundError):
+			BinLog.from_bin("example2.avb", missing_bin_ok=True)
+	
+	def test_stats(self):
 
+		log = BinLog.from_path(PATH_LOG)
+	
+		# Raw strings
+		with open(PATH_LOG) as handle_log:
+			raw_log = handle_log.read()
+		earliest_string = raw_log.split("\n")[0]
+		latest_string   = raw_log.split("\n")[-2]	# Very last line is empty
 
+		self.assertEqual(log.earliest_entry().to_string(), earliest_string)
+		self.assertEqual(log.latest_entry().to_string(), latest_string)
+
+		# Hacky but DYNAMIC
+		user_count = 0
+		computer_count = 0
+		for user in log.users():
+			user_count += raw_log.count(user)
+		for computer in log.computers():
+			computer_count += raw_log.count(computer)
+		
+		self.assertEqual(len(log), 10)
+		self.assertEqual(user_count, 10)
+		self.assertEqual(computer_count, 10)
+		self.assertEqual(len(log.timestamps()), 10)
+	
+	def test_writes(self):
+
+		# From Existing
+		existing_log = BinLog.from_path(PATH_LOG)
+
+		with tempfile.TemporaryDirectory() as temp_dir:
+			temp_dir = pathlib.Path(temp_dir)
+
+			existing_log.to_path(temp_dir/"from_existing.log")
+		
+			# Overwite
+			existing_log.to_path(temp_dir/"from_existing.log")
+
+			# For bin
+			existing_log.to_bin(temp_dir/"poopoo.avb")
+			self.assertEqual(BinLog.from_path(temp_dir/"poopoo.log").to_string(), existing_log.to_string())
+
+			# Fail non-existing bin
+			with self.assertRaises(exceptions.BinNotFoundError):
+				existing_log.to_bin(temp_dir/"poopoo.avb", missing_bin_ok=False)
+	
+	def test_touch(self):
+
+		import socket, getpass
+
+		hostname = defaults.DEFAULT_COMPUTER
+		username = defaults.DEFAULT_USER
+
+		with tempfile.TemporaryDirectory() as temp_dir:
+			temp_dir = pathlib.Path(temp_dir)
+
+			with self.assertRaises(exceptions.BinNotFoundError):
+				BinLog.touch_bin(temp_dir/"weewee.avb", missing_bin_ok=False)
+
+			# Allow no bin
+			BinLog.touch_bin(temp_dir/"peepee.avb")
+
+			that_new_log = BinLog.from_path(temp_dir/"peepee.log")
+
+			self.assertEqual(len(that_new_log), 1)
+			self.assertEqual(that_new_log[0].user, username)
+			self.assertEqual(that_new_log[0].computer, hostname)
+
+			first_timestamp = that_new_log[0].timestamp
+
+			time.sleep(1)
+
+			# Touch it again
+			BinLog.touch_bin(temp_dir/"peepee.avb")
+			that_new_log = BinLog.from_path(temp_dir/"peepee.log")
+
+			self.assertEqual(len(that_new_log), 2)
+			self.assertEqual(that_new_log[1].user, username)
+			self.assertEqual(that_new_log[1].computer, hostname)
+
+			self.assertEqual(that_new_log[0].timestamp, first_timestamp)
+			self.assertNotEqual(that_new_log[0], that_new_log[1])
 
 if __name__ == "__main__":
 
