@@ -46,6 +46,36 @@ class TestBinLog(unittest.TestCase):
 		
 		with self.assertRaises(exceptions.BinLogNotFoundError):
 			BinLog.from_bin("example2.avb", missing_bin_ok=True)
+
+	def test_list_operations(self):
+
+		log = BinLog.from_path(PATH_LOG)
+		
+		# Check types
+		with self.assertRaises(exceptions.BinLogTypeError):
+			log.append([BinLogEntry()])
+		with self.assertRaises(exceptions.BinLogTypeError):
+			log.extend(BinLogEntry())
+		with self.assertRaises(exceptions.BinLogTypeError):
+			log + BinLogEntry()
+		with self.assertRaises(exceptions.BinLogTypeError):
+			log[4] = "No"
+		
+		# Basics
+		log.append(BinLogEntry())
+		log.extend([BinLogEntry(), BinLogEntry()])
+		del log[3]
+
+		# Add logs
+		self.assertEqual(len(log), 12)
+		log += log
+		self.assertEqual(len(log), 12*2)
+
+		# Contains
+		entry = BinLogEntry()
+		log[4] = entry
+		self.assertTrue(entry in log)
+		self.assertEqual(log.count(entry), 1)
 	
 	def test_stats(self):
 
