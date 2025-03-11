@@ -83,13 +83,11 @@ class BinLog(collections.UserList):
 		"""Load from an existing .log file"""
 		# NOTE: Encountered mac_roman, need to deal with older encodings sometimes
 
-		import pathlib
-
-		if not pathlib.Path(log_path).is_file():
+		try:
+			with open (log_path, "r") as log_handle:
+				return cls.from_stream(log_handle, max_year=max_year)
+		except FileNotFoundError as e:
 			raise BinLogNotFoundError(f"A log file was not found at the given path {log_path}")
-
-		with open (log_path, "r") as log_handle:
-			return cls.from_stream(log_handle, max_year=max_year)
 	
 	@classmethod
 	def from_stream(cls, file_handle:typing.TextIO, max_year:typing.Optional[int]=None) -> "BinLog":
