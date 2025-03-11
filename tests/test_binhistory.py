@@ -2,7 +2,7 @@ import pytest
 import datetime
 import os
 import tempfile
-from binhistory.binlog import BinLog, BinLogEntry
+from binhistory import BinLog, BinLogEntry
 from binhistory.exceptions import (
     BinLogParseError, BinLogFieldLengthError, BinLogInvalidFieldError, BinLogTypeError, BinLogNotFoundError
 )
