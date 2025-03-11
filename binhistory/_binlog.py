@@ -47,11 +47,13 @@ class BinLog(collections.UserList):
 		super().__setitem__(index, item)
 	
 	def __add__(self, other):
-		self._validate_item(other)
+		if not isinstance(other, self.__class__):
+			raise BinLogTypeError(f"Can only add another {self.__class__.__name__} (got {type(other).__name__})")
 		return super().__add__(other)
 	
 	def __iadd__(self, other):
-		self._validate_item(other)
+		if not isinstance(other, self.__class__):
+			raise BinLogTypeError(f"Can only add another {self.__class__.__name__} (got {type(other).__name__})")
 		return super().__iadd__(other)
 	
 	def insert(self, i, item):
@@ -63,7 +65,10 @@ class BinLog(collections.UserList):
 		return super().append(item)
 	
 	def extend(self, other):
-		[self._validate_item(o) for o in other]
+		try:
+			[self._validate_item(o) for o in other]
+		except TypeError as e:
+			raise BinLogTypeError(e) from e
 		return super().extend(other)
 	
 	# Formatters
