@@ -6,7 +6,7 @@ import collections, datetime, typing
 
 from ._binlogentry import BinLogEntry
 from .defaults import MAX_ENTRIES, DEFAULT_FILE_EXTENSION
-from .exceptions import BinLogTypeError, BinLogNotFoundError, BinNotFoundError
+from .exceptions import BinLogTypeError, BinLogNotFoundError, BinNotFoundError, BinLogParseError
 
 class BinLog(collections.UserList):
 	"""An .avb access log"""
@@ -93,7 +93,9 @@ class BinLog(collections.UserList):
 			with open (log_path, "r") as log_handle:
 				return cls.from_stream(log_handle, max_year=max_year)
 		except FileNotFoundError as e:
-			raise BinLogNotFoundError(f"A log file was not found at the given path {log_path}")
+			raise BinLogNotFoundError(f"A log file was not found at the given path {log_path}") from e
+		except UnicodeDecodeError as e:
+			raise BinLogParseError(f"Error decoding log: {e}") from e
 	
 	@classmethod
 	def from_stream(cls, file_handle:typing.TextIO, max_year:typing.Optional[int]=None) -> "BinLog":
