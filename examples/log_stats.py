@@ -42,6 +42,8 @@ if __name__ == "__main__":
 		print(USAGE)
 		sys.exit(2)
 
+print("Scroungin up them logs fer yas here...")
+
 # Loop through all known logs
 for log_path in pathlib.Path(sys.argv[1]).rglob("*.log"):
 
@@ -51,13 +53,13 @@ for log_path in pathlib.Path(sys.argv[1]).rglob("*.log"):
 
 	# Read and print the log
 	try:
-		print(f"\033[K{log_path}:", end="\r", flush=True)
+		print(f"\033[KReading {log_path}:", end="\r", flush=True)
 		log = BinLog.from_path(log_path)
-		print(f"\033[K{log_path}: {log}", end="\r")
+		print(f"\033[KFound {log_path}: {log}", end="\r")
 		logs_good += 1
 
 	except Exception as e:
-		print(f"\033[K{log_path}: {e}", file=sys.stderr)
+		print(f"\033[KError for {log_path}: {e}", file=sys.stderr)
 		logs_bad += 1
 		continue
 
