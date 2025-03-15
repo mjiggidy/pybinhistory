@@ -38,4 +38,4 @@ pip install .
 See [readthedocs.io](https://pybinhistory.readthedocs.io) for general usage and API documentation!
 
 ## See Also
-- [`pybinlock`](https://github.com/mjiggidy/pybinlock) - Programmatcially read and write Avid bin lock (`.lck`) files
+- [`pybinlock`](https://github.com/mjiggidy/pybinlock) - Programmatically read and write Avid bin lock (`.lck`) files
