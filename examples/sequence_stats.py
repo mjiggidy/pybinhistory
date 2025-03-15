@@ -83,4 +83,9 @@ if __name__ == "__main__":
 		print("The bin is currently locked.  Changes must not be made while reading.", file=sys.stderr)
 		sys.exit(4)
 
+	for change in changes:
+		print("")
+		print(change)
+		for sequence in changes[change]:
+			print(sequence.name, sequence.last_modified)
 	
