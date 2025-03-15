@@ -25,7 +25,7 @@ About Avid bin logs
 -------------------
 
 
-An Avid bin log is a ``.log`` file that lives alongside an Avid bin (``.avb`` or ``.avs``) file in a multi-user 
+An Avid bin log is a ``.log`` file that lives alongside an Avid bin (``.avb`` or ``.avc``) file in a multi-user 
 Avid environment.  It maintains a history of the most recent modifications made to the contents of the bin.  Each time 
 a user saves changes to a bin, its ``.log`` is updated with another entry.
 
