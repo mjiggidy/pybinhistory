@@ -23,18 +23,21 @@ def get_log_entry_for_timestamp(log:binhistory.BinLog, timestamp:datetime.dateti
 	for log_entry in log:
 		if log_entry.timestamp > timestamp:
 			last = log_entry
-	
+	if (last.timestamp - timestamp) > datetime.timedelta(hours=1):
+		return None
 	return last
 
 def build_change_list(log:binhistory.BinLog, sequences:list[avb.trackgroups.Composition]) -> dict[binhistory.BinLogEntry, list[avb.trackgroups.Composition]]:
 	"""Determine who changed what"""
 
 	changes:dict[binhistory.BinLogEntry, list[avb.trackgroups.Composition]] = dict()
-
 	for sequence in sorted(sequences, key=lambda s: s.last_modified, reverse=True):
+
 		log_entry= get_log_entry_for_timestamp(log, sequence.last_modified)
+
 		if log_entry not in changes:
 			changes[log_entry] = []
+
 		changes[log_entry].append(sequence)
 	
 	return changes
@@ -82,9 +85,14 @@ if __name__ == "__main__":
 	sorted_log = sorted(log, key=lambda l:l.timestamp, reverse=True)
 	changes = build_change_list(sorted_log, sequences)
 
-	for change in changes:
+	for change in [c for c in changes if c is not None]:
 		print("")
 		print(f"Modified by {change.computer} around {change.timestamp.strftime('%Y %B %d @ %I:%M %p')}")
 		for sequence in changes[change]:
 			print(f"\t{sequence.name}  {sequence.last_modified.strftime('%Y %B %d @ %I:%M %p')}")
 	
+	if None in changes:
+		print("")
+		print("Modified before first log entry:")
+		for sequence in changes[None]:
+			print(f"\t{sequence.name}  {sequence.last_modified.strftime('%Y %B %d @ %I:%M %p')}")
