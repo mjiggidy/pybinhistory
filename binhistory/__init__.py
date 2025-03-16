@@ -1,10 +1,7 @@
 """
-:mod:`binhistory` is for working with Avid bin ``.log`` files.
+:mod:`binhistory` is for reading and writing Avid bin ``.log`` files.
 
-It is designed to help developers read and write valid bin logs 
-without a whole lotta fuss.
-
-Tenderly over-engineered by Michael Jordan <michael@glowingpixel.com> while he struggled to find his next AE gig.
+Written by Michael Jordan <michael@glowingpixel.com>
 """
 
 from . import exceptions, defaults
