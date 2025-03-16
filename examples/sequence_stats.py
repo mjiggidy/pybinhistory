@@ -29,6 +29,8 @@ def get_log_entry_for_timestamp(log:binhistory.BinLog, timestamp:datetime.dateti
 def build_change_list(log:binhistory.BinLog, sequences:list[avb.trackgroups.Composition]) -> dict[binhistory.BinLogEntry, list[avb.trackgroups.Composition]]:
 	"""Determine who changed what"""
 
+	changes:dict[binhistory.BinLogEntry, list[avb.trackgroups.Composition]] = dict()
+
 	for sequence in sorted(sequences, key=lambda s: s.last_modified, reverse=True):
 		log_entry= get_log_entry_for_timestamp(log, sequence.last_modified)
 		if log_entry not in changes:
