@@ -1,5 +1,5 @@
 """
-For a given Avid bin, 
+For a given Avid bin containing sequences, resolve who last modified each sequence
 
 NOTE: This example requires the `pyavb` package.  Install via `pip install pyavb`
 NOTE: This example requires the `pybinlock` package.  Install via `pip install pybinlock`
@@ -7,14 +7,13 @@ NOTE: This example requires the `pybinlock` package.  Install via `pip install p
 
 import sys, pathlib, datetime
 import binhistory
-import binlock
 
 USAGE = f"Usage: {pathlib.Path(__file__).name} avidbin.avb"
 
 try:
-	import avb
+	import avb, binlock
 except ImportError:
-	print("`pyavb` package is required for this example, but was not found.  Please `pip install pyavb` before using.", file=sys.stderr)
+	print("`pyavb` and `pybinlock` packages are required for this example, but was not found.  Please `pip install` them before using", file=sys.stderr)
 	sys.exit(1)
 
 def get_log_entry_for_timestamp(log:binhistory.BinLog, timestamp:datetime.datetime) -> binhistory.BinLog:
@@ -29,8 +28,6 @@ def get_log_entry_for_timestamp(log:binhistory.BinLog, timestamp:datetime.dateti
 
 def build_change_list(log:binhistory.BinLog, sequences:list[avb.trackgroups.Composition]) -> dict[binhistory.BinLogEntry, list[avb.trackgroups.Composition]]:
 	"""Determine who changed what"""
-
-	changes:dict[binhistory.BinLogEntry, list[avb.trackgroups.Composition]] = dict()
 
 	for sequence in sorted(sequences, key=lambda s: s.last_modified, reverse=True):
 		log_entry= get_log_entry_for_timestamp(log, sequence.last_modified)
@@ -72,20 +69,20 @@ if __name__ == "__main__":
 	try:
 		with binlock.BinLock("zAutomation").hold_bin(path_bin), avb.open(path_bin) as avb_handle:
 			sequences = list(avb_handle.content.toplevel())
-			if not sequences:
-				print("No sequences found in bin; nothing to do")
-				sys.exit()
-
-			sorted_log = sorted(log, key=lambda l:l.timestamp, reverse=True)
-			changes = build_change_list(sorted_log, sequences)
-
 	except binlock.exceptions.BinLockExistsError as e:
-		print("The bin is currently locked.  Changes must not be made while reading.", file=sys.stderr)
+		print("The bin is currently locked.  Changes must not be made while reading", file=sys.stderr)
 		sys.exit(4)
+
+	if not sequences:
+		print("No sequences found in bin; nothing to do")
+		sys.exit()
+
+	sorted_log = sorted(log, key=lambda l:l.timestamp, reverse=True)
+	changes = build_change_list(sorted_log, sequences)
 
 	for change in changes:
 		print("")
-		print(change)
+		print(f"Modified by {change.computer} around {change.timestamp.strftime('%Y %B %d @ %I:%M %p')}")
 		for sequence in changes[change]:
-			print(sequence.name, sequence.last_modified)
+			print(f"\t{sequence.name}  {sequence.last_modified.strftime('%Y %B %d @ %I:%M %p')}")
 	
